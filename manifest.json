@@ -1,0 +1,23 @@
+{
+"short_name": "PM Studio PRO",
+"name": "PM Studio - Portal do Personal Trainer",
+"icons": [
+{
+"src": "https://github.com/user-attachments/assets/accbe46e-a329-43fa-ae13-b47ee6b2c18c",
+"sizes": "192x192",
+"type": "image/png",
+"purpose": "any maskable"
+},
+{
+"src": "https://github.com/user-attachments/assets/accbe46e-a329-43fa-ae13-b47ee6b2c18c",
+"sizes": "512x512",
+"type": "image/png",
+"purpose": "any maskable"
+}
+],
+"start_url": "./index.html",
+"background_color": "#121212",
+"theme_color": "#121212",
+"display": "standalone",
+"orientation": "portrait"
+}
