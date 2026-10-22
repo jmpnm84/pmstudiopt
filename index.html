@@ -1,1480 +1,1467 @@
-<script>
-    tailwind.config = {
-        darkMode: 'class',
-        theme: {
-            extend: {
-                colors: {
-                    brand: {
-                        50: '#f7ffe5',
-                        400: '#d4ff33',
-                        500: '#ccff00', /* Neon Lime */
-                        600: '#a3cc00',
-                        neon: '#ccff00',
-                        accent: '#00f0ff'
+<!DOCTYPE html>
+<html lang="pt">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PM Studio PRO - Portal Personal Trainer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- FontAwesome CDN para Ícones -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Fonte Google Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            50: '#f7ffe5',
+                            400: '#d4ff33',
+                            500: '#ccff00', /* Neon Lime */
+                            600: '#a3cc00',
+                            neon: '#ccff00',
+                            accent: '#00f0ff'
+                        },
+                        dark: {
+                            bg: '#121212',
+                            card: '#1e1e1e',
+                            border: '#2a2a2a',
+                            hover: '#282828'
+                        }
                     },
-                    dark: {
-                        bg: '#121212',
-                        card: '#1e1e1e',
-                        border: '#2a2a2a',
-                        hover: '#282828'
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
                     }
-                },
-                fontFamily: {
-                    sans: ['Inter', 'sans-serif'],
                 }
             }
         }
-    }
-</script>
+    </script>
 
-<style>
-    body {
-        background-color: #121212;
-        color: #f8fafc;
-        font-family: 'Inter', sans-serif;
-        -webkit-tap-highlight-color: transparent;
-    }
+    <style>
+        body {
+            background-color: #121212;
+            color: #f8fafc;
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
 
-    .neon-glow {
-        box-shadow: 0 0 15px rgba(204, 255, 0, 0.25);
-    }
-    
-    .neon-glow-lg {
-        box-shadow: 0 0 25px rgba(204, 255, 0, 0.35);
-    }
+        .neon-glow {
+            box-shadow: 0 0 15px rgba(204, 255, 0, 0.25);
+        }
+        
+        .neon-glow-lg {
+            box-shadow: 0 0 25px rgba(204, 255, 0, 0.35);
+        }
 
-    .custom-scrollbar::-webkit-scrollbar {
-        width: 6px;
-        height: 6px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-track {
-        background: #1e1e1e;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb {
-        background: #2a2a2a;
-        border-radius: 9999px;
-    }
-    .custom-scrollbar::-webkit-scrollbar-thumb:hover {
-        background: #ccff00;
-    }
+        .custom-scrollbar::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-track {
+            background: #1e1e1e;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb {
+            background: #2a2a2a;
+            border-radius: 9999px;
+        }
+        .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+            background: #ccff00;
+        }
 
-    .tab-content {
-        display: none;
-        opacity: 0;
-        transition: opacity 0.25s ease-in-out;
-    }
-    .tab-content.active {
-        display: block;
-        opacity: 1;
-    }
-</style>
+        .tab-content {
+            display: none;
+            opacity: 0;
+            transition: opacity 0.25s ease-in-out;
+        }
+        .tab-content.active {
+            display: block;
+            opacity: 1;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col md:flex-row pb-20 md:pb-0 custom-scrollbar">
 
+    <!-- BARRA LATERAL (Desktop) -->
+    <aside class="hidden md:flex flex-col w-64 bg-dark-card border-r border-dark-border p-5 justify-between h-screen sticky top-0 z-30">
+        <div>
+            <!-- Logo -->
+            <div class="flex items-center space-x-3 mb-6 px-2">
+                <img src="https://github.com/user-attachments/assets/accbe46e-a329-43fa-ae13-b47ee6b2c18c" alt="PM Studio Logo" class="w-10 h-10 object-contain rounded-xl border border-dark-border bg-slate-900/50 p-0.5">
+                <div>
+                    <h1 class="text-xl font-bold tracking-wider text-white">PM <span class="text-brand-500">PRO</span></h1>
+                    <p class="text-xs text-brand-accent font-medium">Portal do Personal Trainer</p>
+                </div>
+            </div>
 
-<!-- BARRA LATERAL (Desktop) -->
-<aside class="hidden md:flex flex-col w-64 bg-dark-card border-r border-dark-border p-5 justify-between h-screen sticky top-0 z-30">
-    <div>
-        <!-- Logo -->
-        <div class="flex items-center space-x-3 mb-6 px-2">
-            <img src="https://github.com/user-attachments/assets/accbe46e-a329-43fa-ae13-b47ee6b2c18c" alt="PM Studio Logo" class="w-10 h-10 object-contain rounded-xl border border-dark-border bg-slate-900/50 p-0.5">
-            <div>
-                <h1 class="text-xl font-bold tracking-wider text-white">PM <span class="text-brand-500">PRO</span></h1>
-                <p class="text-xs text-brand-accent font-medium">Portal do Trainer</p>
+            <!-- Seletor de Alunos na Sidebar -->
+            <div class="mb-6 bg-slate-900/80 p-3 rounded-2xl border border-dark-border">
+                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+                    <i class="fa-solid fa-users text-brand-500"></i> Aluno Selecionado
+                </label>
+                <select id="sidebar-student-select" onchange="changeStudent(this.value)" class="w-full bg-slate-800 text-xs text-white border border-dark-border rounded-xl p-2.5 outline-none focus:border-brand-500 font-semibold cursor-pointer">
+                    <!-- Preenchido via JS -->
+                </select>
+            </div>
+
+            <!-- Navegação Desktop -->
+            <nav class="space-y-1.5">
+                <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-brand-400 font-bold hover:bg-dark-hover active-nav" data-tab="dashboard">
+                    <i class="fa-solid fa-chart-pie text-lg"></i>
+                    <span class="font-medium text-sm">Visão Geral</span>
+                </button>
+                <button onclick="switchTab('metrics')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-dark-hover" data-tab="metrics">
+                    <i class="fa-solid fa-chart-line text-lg"></i>
+                    <span class="font-medium text-sm">Evolução de Atletas</span>
+                </button>
+                <button onclick="switchTab('workouts')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-dark-hover" data-tab="workouts">
+                    <i class="fa-solid fa-dumbbell text-lg"></i>
+                    <span class="font-medium text-sm">Diário de Treino</span>
+                </button>
+                <button onclick="switchTab('prescribe')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-dark-hover" data-tab="prescribe">
+                    <i class="fa-solid fa-pen-to-square text-lg"></i>
+                    <span class="font-medium text-sm">Prescrever Treinos</span>
+                </button>
+                <button onclick="switchTab('nutrition')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-dark-hover" data-tab="nutrition">
+                    <i class="fa-solid fa-apple-whole text-lg"></i>
+                    <span class="font-medium text-sm">Nutrição & Água</span>
+                </button>
+                <button onclick="switchTab('notes')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-dark-hover" data-tab="notes">
+                    <i class="fa-solid fa-clipboard text-lg"></i>
+                    <span class="font-medium text-sm">Notas do Trainer</span>
+                </button>
+            </nav>
+        </div>
+
+        <!-- Perfil do Trainer na Sidebar -->
+        <div class="pt-4 border-t border-dark-border flex items-center justify-between px-2">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-full bg-brand-500/20 flex items-center justify-center font-bold text-brand-500 border border-brand-500/40 shrink-0">
+                    PT
+                </div>
+                <div class="truncate">
+                    <p class="text-sm font-semibold text-white truncate">Personal Trainer</p>
+                    <p class="text-xs text-brand-accent flex items-center gap-1">
+                        <i class="fa-solid fa-circle text-[8px] text-emerald-400"></i> Portal Ativo
+                    </p>
+                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">v1.0.0 PT-PRO</p>
+                </div>
+            </div>
+            <button onclick="openModal('sync-modal')" title="Importar JSON do Aluno" class="p-2 bg-slate-800 hover:bg-slate-700 text-brand-400 rounded-xl transition border border-dark-border">
+                <i class="fa-solid fa-file-import"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- HEADER MOBILE -->
+    <header class="md:hidden bg-dark-card border-b border-dark-border p-4 flex flex-col gap-3 sticky top-0 z-30">
+        <div class="flex justify-between items-center">
+            <div class="flex items-center space-x-2">
+                <img src="https://github.com/user-attachments/assets/accbe46e-a329-43fa-ae13-b47ee6b2c18c" alt="PM Studio Logo" class="w-8 h-8 object-contain rounded-lg border border-dark-border bg-slate-900/50 p-0.5">
+                <span class="font-bold text-lg tracking-wider text-white">PM <span class="text-brand-500">PRO</span></span>
+            </div>
+            <div class="flex items-center space-x-2">
+                <button onclick="openModal('sync-modal')" class="px-2.5 py-1.5 bg-slate-800 text-brand-400 border border-dark-border rounded-lg text-xs font-semibold flex items-center gap-1.5">
+                    <i class="fa-solid fa-file-import"></i> JSON
+                </button>
+                <div id="mobile-avatar" class="w-8 h-8 rounded-full bg-brand-500/20 flex items-center justify-center font-bold text-xs text-brand-500 border border-brand-500/30">
+                    PT
+                </div>
             </div>
         </div>
 
-        <!-- Seletor de Alunos na Sidebar -->
-        <div class="mb-6 bg-slate-900/80 p-3 rounded-2xl border border-dark-border">
-            <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-                <i class="fa-solid fa-users text-brand-500"></i> Aluno Selecionado
-            </label>
-            <select id="sidebar-student-select" onchange="changeStudent(this.value)" class="w-full bg-slate-800 text-xs text-white border border-dark-border rounded-xl p-2.5 outline-none focus:border-brand-500 font-semibold cursor-pointer">
+        <!-- Seletor de Aluno Mobile -->
+        <div>
+            <select id="mobile-student-select" onchange="changeStudent(this.value)" class="w-full bg-slate-800 text-xs text-white border border-dark-border rounded-xl p-2.5 outline-none focus:border-brand-500 font-semibold">
                 <!-- Preenchido via JS -->
             </select>
         </div>
+    </header>
 
-        <!-- Navegação Desktop -->
-        <nav class="space-y-1.5">
-            <button onclick="switchTab('dashboard')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-brand-400 font-bold hover:bg-dark-hover active-nav" data-tab="dashboard">
-                <i class="fa-solid fa-chart-pie text-lg"></i>
-                <span class="font-medium text-sm">Visão Geral</span>
-            </button>
-            <button onclick="switchTab('metrics')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-dark-hover" data-tab="metrics">
-                <i class="fa-solid fa-chart-line text-lg"></i>
-                <span class="font-medium text-sm">Métricas & Evolução</span>
-            </button>
-            <button onclick="switchTab('workouts')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-dark-hover" data-tab="workouts">
-                <i class="fa-solid fa-dumbbell text-lg"></i>
-                <span class="font-medium text-sm">Fichas & Diário</span>
-            </button>
-            <button onclick="switchTab('prescribe')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-dark-hover" data-tab="prescribe">
-                <i class="fa-solid fa-pen-to-square text-lg"></i>
-                <span class="font-medium text-sm">Prescrever Treino</span>
-            </button>
-            <button onclick="switchTab('nutrition')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-dark-hover" data-tab="nutrition">
-                <i class="fa-solid fa-apple-whole text-lg"></i>
-                <span class="font-medium text-sm">Nutrição & Água</span>
-            </button>
-            <button onclick="switchTab('notes')" class="nav-btn w-full flex items-center space-x-3 px-4 py-3 rounded-xl transition text-slate-300 hover:bg-dark-hover" data-tab="notes">
-                <i class="fa-solid fa-clipboard text-lg"></i>
-                <span class="font-medium text-sm">Notas do Trainer</span>
-            </button>
-        </nav>
-    </div>
+    <!-- CONTEÚDO PRINCIPAL -->
+    <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full overflow-x-hidden">
 
-    <!-- Perfil do Trainer na Sidebar -->
-    <div class="pt-4 border-t border-dark-border flex items-center justify-between px-2">
-        <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-full bg-brand-500/20 flex items-center justify-center font-bold text-brand-500 border border-brand-500/40 shrink-0">
-                PT
-            </div>
-            <div class="truncate">
-                <p class="text-sm font-semibold text-white truncate">Personal Trainer</p>
-                <p class="text-xs text-brand-accent flex items-center gap-1">
-                    <i class="fa-solid fa-circle text-[8px] text-emerald-400"></i> Portal Ativo
-                </p>
-                <p class="text-[10px] text-slate-500 font-mono mt-0.5">v1.0.0 PT-PRO</p>
-            </div>
-        </div>
-        <button onclick="openModal('sync-modal')" title="Importar Dados do Aluno" class="p-2 bg-slate-800 hover:bg-slate-700 text-brand-400 rounded-xl transition border border-dark-border">
-            <i class="fa-solid fa-file-import"></i>
-        </button>
-    </div>
-</aside>
-
-<!-- HEADER MOBILE -->
-<header class="md:hidden bg-dark-card border-b border-dark-border p-4 flex flex-col gap-3 sticky top-0 z-30">
-    <div class="flex justify-between items-center">
-        <div class="flex items-center space-x-2">
-            <img src="https://github.com/user-attachments/assets/accbe46e-a329-43fa-ae13-b47ee6b2c18c" alt="PM Studio Logo" class="w-8 h-8 object-contain rounded-lg border border-dark-border bg-slate-900/50 p-0.5">
-            <span class="font-bold text-lg tracking-wider text-white">PM <span class="text-brand-500">PRO</span></span>
-        </div>
-        <div class="flex items-center space-x-2">
-            <button onclick="openModal('sync-modal')" class="px-2.5 py-1.5 bg-slate-800 text-brand-400 border border-dark-border rounded-lg text-xs font-semibold flex items-center gap-1.5">
-                <i class="fa-solid fa-file-import"></i> Importar
-            </button>
-            <div id="mobile-avatar" class="w-8 h-8 rounded-full bg-brand-500/20 flex items-center justify-center font-bold text-xs text-brand-500 border border-brand-500/30">
-                PT
-            </div>
-        </div>
-    </div>
-
-    <!-- Seletor de Aluno Mobile -->
-    <div>
-        <select id="mobile-student-select" onchange="changeStudent(this.value)" class="w-full bg-slate-800 text-xs text-white border border-dark-border rounded-xl p-2.5 outline-none focus:border-brand-500 font-semibold">
-            <!-- Preenchido via JS -->
-        </select>
-    </div>
-</header>
-
-<!-- CONTEÚDO PRINCIPAL -->
-<main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full overflow-x-hidden">
-
-    <!-- Banner do Aluno Ativo -->
-    <div class="bg-gradient-to-r from-dark-card via-slate-900 to-dark-card p-5 md:p-6 rounded-2xl border border-dark-border mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
-        <div class="flex items-center space-x-4">
-            <div id="student-avatar-large" class="w-14 h-14 rounded-2xl bg-brand-500 text-black font-extrabold text-xl flex items-center justify-center shadow-lg neon-glow shrink-0">
-                --
-            </div>
-            <div>
-                <div class="flex items-center gap-2">
-                    <h2 id="student-name-display" class="text-2xl font-black text-white">Carregando Aluno...</h2>
-                    <span id="student-level-badge" class="px-2.5 py-0.5 bg-brand-500/20 text-brand-400 text-xs font-bold rounded-full border border-brand-500/30">Nível 1</span>
+        <!-- Banner do Aluno Ativo -->
+        <div class="bg-gradient-to-r from-dark-card via-slate-900 to-dark-card p-5 md:p-6 rounded-2xl border border-dark-border mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
+            <div class="flex items-center space-x-4">
+                <div id="student-avatar-large" class="w-14 h-14 rounded-2xl bg-brand-500 text-black font-extrabold text-xl flex items-center justify-center shadow-lg neon-glow shrink-0">
+                    --
                 </div>
-                <p class="text-slate-400 text-xs mt-1 flex items-center gap-3 flex-wrap">
-                    <span><i class="fa-solid fa-fire text-amber-500"></i> <strong id="student-streak-display" class="text-white">0</strong> dias seguidos</span>
-                    <span>•</span>
-                    <span><i class="fa-solid fa-trophy text-brand-400"></i> <strong id="student-xp-display" class="text-white">0</strong> XP Total</span>
-                    <span>•</span>
-                    <span><i class="fa-solid fa-calendar-check text-brand-accent"></i> <strong id="student-workouts-display" class="text-white">0</strong> treinos/mês</span>
-                </p>
-            </div>
-        </div>
-
-        <div class="flex items-center gap-2 w-full md:w-auto justify-end">
-            <button onclick="openModal('add-student-modal')" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-dark-border transition flex items-center gap-2">
-                <i class="fa-solid fa-user-plus text-brand-500"></i> Novo Aluno
-            </button>
-            <button onclick="openModal('sync-modal')" class="px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-black text-xs font-extrabold rounded-xl transition neon-glow flex items-center gap-2">
-                <i class="fa-solid fa-arrows-rotate"></i> Sincronizar Dados
-            </button>
-        </div>
-    </div>
-
-    <!-- 1. DASHBOARD / VISÃO GERAL -->
-    <section id="tab-dashboard" class="tab-content active space-y-6">
-        <!-- Métricas Rápidas do Aluno -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div class="bg-dark-card p-4 rounded-2xl border border-dark-border">
-                <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
-                    <span>Peso Atual</span>
-                    <i class="fa-solid fa-weight-scale text-brand-400"></i>
-                </div>
-                <div class="text-2xl font-bold text-white"><span id="dash-weight">--</span> <span class="text-xs text-slate-400 font-normal">kg</span></div>
-                <span id="dash-weight-diff" class="text-xs text-emerald-400 flex items-center gap-1 mt-1"><i class="fa-solid fa-arrow-trend-down"></i> Em acompanhamento</span>
-            </div>
-
-            <div class="bg-dark-card p-4 rounded-2xl border border-dark-border">
-                <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
-                    <span>Gordura Corporal</span>
-                    <i class="fa-solid fa-percent text-brand-accent"></i>
-                </div>
-                <div class="text-2xl font-bold text-white"><span id="dash-fat">--</span> <span class="text-xs text-slate-400 font-normal">%</span></div>
-                <span class="text-xs text-slate-400 mt-1 block">Meta: Estabilização</span>
-            </div>
-
-            <div class="bg-dark-card p-4 rounded-2xl border border-dark-border">
-                <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
-                    <span>Calorias Registadas</span>
-                    <i class="fa-solid fa-fire text-amber-500"></i>
-                </div>
-                <div class="text-2xl font-bold text-white"><span id="dash-cals">0</span> <span class="text-xs text-slate-400 font-normal">kcal</span></div>
-                <span class="text-xs text-slate-400 mt-1 block">Refeições de Hoje</span>
-            </div>
-
-            <div class="bg-dark-card p-4 rounded-2xl border border-dark-border">
-                <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
-                    <span>Água Ingerida</span>
-                    <i class="fa-solid fa-droplet text-blue-400"></i>
-                </div>
-                <div class="text-2xl font-bold text-white"><span id="dash-water">0.0</span> <span class="text-xs text-slate-400 font-normal">L</span></div>
-                <span class="text-xs text-blue-400 mt-1 block">Meta Diária: 3.0 L</span>
-            </div>
-        </div>
-
-        <!-- Resumo de Treino e Observações do Personal -->
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Estado do Treino Ativo -->
-            <div class="lg:col-span-2 bg-dark-card p-6 rounded-2xl border border-dark-border space-y-4">
-                <div class="flex justify-between items-center">
-                    <h3 class="font-bold text-lg text-white flex items-center gap-2">
-                        <i class="fa-solid fa-clipboard-check text-brand-500"></i> Ficha Ativa do Aluno
-                    </h3>
-                    <span id="active-routine-badge" class="text-xs bg-brand-500/10 text-brand-400 px-3 py-1 rounded-full border border-brand-500/20 font-semibold">Treino A</span>
-                </div>
-
-                <div id="dash-routine-summary" class="space-y-3">
-                    <!-- Inserido dinamicamente via JS -->
-                </div>
-
-                <button onclick="switchTab('prescribe')" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-brand-400 font-semibold rounded-xl text-sm transition border border-brand-500/20 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-pen-to-square"></i> Editar ou Modificar Ficha de Treino
-                </button>
-            </div>
-
-            <!-- Painel Rápido de Observações -->
-            <div class="bg-dark-card p-6 rounded-2xl border border-dark-border flex flex-col justify-between">
                 <div>
-                    <h3 class="font-bold text-lg text-white mb-3 flex items-center gap-2">
-                        <i class="fa-solid fa-user-doctor text-brand-accent"></i> Nota do Treinador
-                    </h3>
-                    <textarea id="quick-trainer-note" rows="5" placeholder="Escreva observações rápidas, orientações de postura ou ajustes de dieta..." class="w-full bg-slate-800/80 text-xs text-slate-200 border border-dark-border rounded-xl p-3 outline-none focus:border-brand-500 custom-scrollbar resize-none"></textarea>
+                    <div class="flex items-center gap-2">
+                        <h2 id="student-name-display" class="text-2xl font-black text-white">A Carregar Aluno...</h2>
+                        <span id="student-level-badge" class="px-2.5 py-0.5 bg-brand-500/20 text-brand-400 text-xs font-bold rounded-full border border-brand-500/30">Nível 1</span>
+                    </div>
+                    <p class="text-slate-400 text-xs mt-1 flex items-center gap-3 flex-wrap">
+                        <span><i class="fa-solid fa-fire text-amber-500"></i> <strong id="student-streak-display" class="text-white">0</strong> dias seguidos</span>
+                        <span>•</span>
+                        <span><i class="fa-solid fa-trophy text-brand-400"></i> <strong id="student-xp-display" class="text-white">0</strong> XP Total</span>
+                        <span>•</span>
+                        <span><i class="fa-solid fa-calendar-check text-brand-accent"></i> <strong id="student-workouts-display" class="text-white">0</strong> treinos este mês</span>
+                    </p>
                 </div>
-                <button onclick="saveQuickNote()" class="mt-4 w-full py-2.5 bg-brand-500 hover:bg-brand-600 text-black font-bold rounded-xl text-xs transition neon-glow">
-                    Guardar Nota
+            </div>
+
+            <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+                <button onclick="openModal('add-student-modal')" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-dark-border transition flex items-center gap-2">
+                    <i class="fa-solid fa-user-plus text-brand-500"></i> Novo Aluno
+                </button>
+                <button onclick="openModal('sync-modal')" class="px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-black text-xs font-extrabold rounded-xl transition neon-glow flex items-center gap-2">
+                    <i class="fa-solid fa-file-import"></i> Importar Dados JSON
                 </button>
             </div>
         </div>
 
-        <!-- Badges e Conquistas do Aluno -->
-        <div class="bg-dark-card p-6 rounded-2xl border border-dark-border">
-            <h3 class="font-bold text-lg text-white mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-trophy text-amber-400"></i> Conquistas do Aluno
-            </h3>
-            <div id="dash-badges-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                <!-- Inserido dinamicamente via JS -->
-            </div>
-        </div>
-    </section>
-
-    <!-- 2. MÉTRICAS E EVOLUÇÃO -->
-    <section id="tab-metrics" class="tab-content space-y-6">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-                <h2 class="text-2xl font-bold text-white">Evolução Físico-Corporal</h2>
-                <p class="text-slate-400 text-sm">Acompanhe a progressão de peso, medidas e testes de força máxima (1RM).</p>
-            </div>
-            <button onclick="openModal('add-metric-modal')" class="px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-black font-bold rounded-xl text-sm transition flex items-center gap-2 neon-glow">
-                <i class="fa-solid fa-plus"></i> Inserir Medida Manual
-            </button>
-        </div>
-
-        <!-- Gráficos -->
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-            <!-- Gráfico de Peso -->
-            <div class="bg-dark-card p-5 rounded-2xl border border-dark-border">
-                <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-weight-scale text-brand-500"></i> Evolução de Peso (kg)
-                    </h3>
-                    <span class="text-xs text-slate-400">PTPortalDB</span>
-                </div>
-                <div class="h-64">
-                    <canvas id="ptWeightChart"></canvas>
-                </div>
-            </div>
-
-            <!-- Gráfico de Cargas -->
-            <div class="bg-dark-card p-5 rounded-2xl border border-dark-border">
-                <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
-                    <h3 class="font-bold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-dumbbell text-brand-accent"></i> Evolução de Força (Cargas)
-                    </h3>
-                    <select id="pt-exercise-chart-select" onchange="renderCharts()" class="bg-slate-800 text-xs text-white border border-dark-border rounded-lg px-2 py-1.5 outline-none focus:border-brand-500">
-                        <option value="Supino Reto com Barra">Supino Reto</option>
-                        <option value="Agachamento Livre">Agachamento</option>
-                        <option value="Levantamento Terra">Levantamento Terra</option>
-                        <option value="Puxada à Frente na Polia">Puxada à Frente</option>
-                    </select>
-                </div>
-                <div class="h-64">
-                    <canvas id="ptStrengthChart"></canvas>
-                </div>
-            </div>
-        </div>
-
-        <!-- Tabela Histórica de Perímetros -->
-        <div class="bg-dark-card rounded-2xl border border-dark-border p-5">
-            <h3 class="font-bold text-white mb-4 flex items-center gap-2">
-                <i class="fa-solid fa-ruler-combined text-slate-400"></i> Histórico Antropométrico
-            </h3>
-            <div class="overflow-x-auto custom-scrollbar">
-                <table class="w-full text-left text-sm text-slate-300">
-                    <thead class="text-xs text-slate-400 uppercase bg-slate-800/60 border-b border-dark-border">
-                        <tr>
-                            <th class="p-3">Data</th>
-                            <th class="p-3">Peso (kg)</th>
-                            <th class="p-3">% Gordura</th>
-                            <th class="p-3">Braço (cm)</th>
-                            <th class="p-3">Cintura (cm)</th>
-                            <th class="p-3">Peito (cm)</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pt-metrics-table-body" class="divide-y divide-dark-border">
-                        <!-- Inserido dinamicamente via JS -->
-                    </tbody>
-                </table>
-            </div>
-        </div>
-    </section>
-
-    <!-- 3. FICHAS E DIÁRIO DE TREINOS -->
-    <section id="tab-workouts" class="tab-content space-y-6">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-            <div>
-                <h2 class="text-2xl font-bold text-white">Diário & Registos do Aluno</h2>
-                <p class="text-slate-400 text-sm">Consulte as séries executadas, repetidas e cargas registadas pelo aluno.</p>
-            </div>
-
-            <!-- Seletor de Fichas -->
-            <div class="flex bg-slate-800 p-1 rounded-xl border border-dark-border w-full md:w-auto">
-                <button onclick="selectRoutineTab('A')" id="btn-pt-routine-A" class="pt-routine-tab-btn flex-1 md:flex-initial px-4 py-2 rounded-lg text-sm font-semibold transition bg-brand-500 text-black">Treino A</button>
-                <button onclick="selectRoutineTab('B')" id="btn-pt-routine-B" class="pt-routine-tab-btn flex-1 md:flex-initial px-4 py-2 rounded-lg text-sm font-semibold transition text-slate-400 hover:text-white">Treino B</button>
-                <button onclick="selectRoutineTab('C')" id="btn-pt-routine-C" class="pt-routine-tab-btn flex-1 md:flex-initial px-4 py-2 rounded-lg text-sm font-semibold transition text-slate-400 hover:text-white">Treino C</button>
-            </div>
-        </div>
-
-        <!-- Lista de Exercícios Executados -->
-        <div id="pt-workout-routine-container" class="space-y-4">
-            <!-- Gerado via JS -->
-        </div>
-    </section>
-
-    <!-- 4. PRESCREVER / EDITAR TREINO -->
-    <section id="tab-prescribe" class="tab-content space-y-6">
-        <div>
-            <h2 class="text-2xl font-bold text-white">Prescrição de Treinos</h2>
-            <p class="text-slate-400 text-sm">Monte ou edite a ficha de treino do aluno selecionado. As alterações ficam prontas a exportar.</p>
-        </div>
-
-        <div class="bg-dark-card p-6 rounded-2xl border border-dark-border space-y-5">
-            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-dark-border">
-                <div class="flex items-center space-x-3">
-                    <label class="text-xs font-bold uppercase text-slate-400">Editar Ficha:</label>
-                    <select id="prescribe-routine-select" onchange="loadPrescriptionRoutine(this.value)" class="bg-slate-800 text-xs font-bold text-brand-400 border border-dark-border rounded-xl px-3 py-2 outline-none focus:border-brand-500">
-                        <option value="A">Treino A - Peito & Tríceps</option>
-                        <option value="B">Treino B - Costas & Bíceps</option>
-                        <option value="C">Treino C - Pernas & Ombros</option>
-                    </select>
-                </div>
-
-                <button onclick="addExerciseToPrescription()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-brand-400 font-semibold rounded-xl text-xs transition border border-dashed border-brand-500/30 flex items-center gap-1.5">
-                    <i class="fa-solid fa-plus"></i> Adicionar Novo Exercício
-                </button>
-            </div>
-
-            <!-- Lista Editável de Exercícios -->
-            <div id="prescription-exercises-list" class="space-y-4">
-                <!-- Preenchido por JS -->
-            </div>
-
-            <div class="pt-4 border-t border-dark-border flex justify-end">
-                <button onclick="saveRoutinePrescription()" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-black font-extrabold rounded-xl text-sm transition neon-glow flex items-center gap-2">
-                    <i class="fa-solid fa-floppy-disk"></i> Guardar Ficha Prescrita
-                </button>
-            </div>
-        </div>
-    </section>
-
-    <!-- 5. NUTRIÇÃO E HÁBITOS DO ALUNO -->
-    <section id="tab-nutrition" class="tab-content space-y-6">
-        <div>
-            <h2 class="text-2xl font-bold text-white">Monitorização Nutricional</h2>
-            <p class="text-slate-400 text-sm">Inspecione a adesão calórica, distribuição de macros e ingestão hídrica.</p>
-        </div>
-
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            <!-- Cartão Calorias e Macros -->
-            <div class="lg:col-span-2 bg-dark-card p-6 rounded-2xl border border-dark-border space-y-6">
-                <div class="flex justify-between items-center">
-                    <h3 class="font-bold text-white text-lg flex items-center gap-2">
-                        <i class="fa-solid fa-utensils text-brand-500"></i> Macronutrientes Ingeridos Hoje
-                    </h3>
-                    <span class="text-xs text-slate-400">Meta Padrão: 2,400 kcal</span>
-                </div>
-
-                <div>
-                    <div class="flex justify-between text-sm mb-1">
-                        <span class="text-slate-300 font-medium">Consumo Calórico</span>
-                        <span class="text-white font-bold"><span id="pt-cals-ingested">0</span> / 2400 kcal</span>
+        <!-- 1. DASHBOARD / VISÃO GERAL DO ATLETA -->
+        <section id="tab-dashboard" class="tab-content active space-y-6">
+            <!-- Métricas Rápidas do Aluno -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                <div class="bg-dark-card p-4 rounded-2xl border border-dark-border">
+                    <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
+                        <span>Peso Atual</span>
+                        <i class="fa-solid fa-weight-scale text-brand-400"></i>
                     </div>
-                    <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
-                        <div id="pt-cals-bar" class="h-full bg-gradient-to-r from-brand-500 to-brand-accent rounded-full transition-all duration-300" style="width: 0%;"></div>
-                    </div>
+                    <div class="text-2xl font-bold text-white"><span id="dash-weight">--</span> <span class="text-xs text-slate-400 font-normal">kg</span></div>
+                    <span id="dash-weight-diff" class="text-xs text-emerald-400 flex items-center gap-1 mt-1"><i class="fa-solid fa-arrow-trend-down"></i> Acompanhamento Ativo</span>
                 </div>
 
-                <!-- Barras dos Macros -->
-                <div class="grid grid-cols-3 gap-4 pt-2">
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
-                        <div class="flex justify-between text-xs text-slate-400 mb-1">
-                            <span>Proteína</span>
-                            <span class="text-brand-400 font-bold"><span id="pt-prot-ingested">0</span> / 180g</span>
-                        </div>
-                        <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                            <div id="pt-prot-bar" class="h-full bg-brand-500 transition-all duration-300" style="width: 0%;"></div>
-                        </div>
+                <div class="bg-dark-card p-4 rounded-2xl border border-dark-border">
+                    <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
+                        <span>Gordura Corporal</span>
+                        <i class="fa-solid fa-percent text-brand-accent"></i>
                     </div>
+                    <div class="text-2xl font-bold text-white"><span id="dash-fat">--</span> <span class="text-xs text-slate-400 font-normal">%</span></div>
+                    <span class="text-xs text-slate-400 mt-1 block">Meta: Estabilização</span>
+                </div>
 
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
-                        <div class="flex justify-between text-xs text-slate-400 mb-1">
-                            <span>Hidratos</span>
-                            <span class="text-amber-400 font-bold"><span id="pt-carbs-ingested">0</span> / 270g</span>
-                        </div>
-                        <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                            <div id="pt-carbs-bar" class="h-full bg-amber-500 transition-all duration-300" style="width: 0%;"></div>
-                        </div>
+                <div class="bg-dark-card p-4 rounded-2xl border border-dark-border">
+                    <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
+                        <span>Calorias Registadas</span>
+                        <i class="fa-solid fa-fire text-amber-500"></i>
                     </div>
+                    <div class="text-2xl font-bold text-white"><span id="dash-cals">0</span> <span class="text-xs text-slate-400 font-normal">kcal</span></div>
+                    <span class="text-xs text-slate-400 mt-1 block">Refeições de Hoje</span>
+                </div>
 
-                    <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
-                        <div class="flex justify-between text-xs text-slate-400 mb-1">
-                            <span>Gordura</span>
-                            <span class="text-rose-400 font-bold"><span id="pt-fat-ingested">0</span> / 65g</span>
-                        </div>
-                        <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                            <div id="pt-fat-bar" class="h-full bg-rose-500 transition-all duration-300" style="width: 0%;"></div>
-                        </div>
+                <div class="bg-dark-card p-4 rounded-2xl border border-dark-border">
+                    <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
+                        <span>Água Ingerida</span>
+                        <i class="fa-solid fa-droplet text-blue-400"></i>
                     </div>
+                    <div class="text-2xl font-bold text-white"><span id="dash-water">0.0</span> <span class="text-xs text-slate-400 font-normal">L</span></div>
+                    <span class="text-xs text-blue-400 mt-1 block">Meta Diária: 3.0 L</span>
                 </div>
             </div>
 
-            <!-- Rastreio de Água -->
-            <div class="bg-dark-card p-6 rounded-2xl border border-dark-border flex flex-col justify-between space-y-6">
-                <div>
-                    <div class="flex justify-between items-center mb-4">
-                        <h3 class="font-bold text-white text-lg flex items-center gap-2">
-                            <i class="fa-solid fa-droplet text-blue-400"></i> Hidratação
+            <!-- Resumo de Treino e Observações do Personal -->
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Estado do Treino Ativo -->
+                <div class="lg:col-span-2 bg-dark-card p-6 rounded-2xl border border-dark-border space-y-4">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-lg text-white flex items-center gap-2">
+                            <i class="fa-solid fa-clipboard-check text-brand-500"></i> Ficha Prescrita Ativa
                         </h3>
-                        <span class="text-xs text-blue-400 font-semibold">Meta: 3.0 Litros</span>
+                        <span id="active-routine-badge" class="text-xs bg-brand-500/10 text-brand-400 px-3 py-1 rounded-full border border-brand-500/20 font-semibold">Treino A</span>
                     </div>
 
-                    <div class="text-center py-8 bg-slate-800/40 rounded-2xl border border-slate-700/50">
-                        <p class="text-4xl font-black text-blue-400 mb-1 font-mono"><span id="pt-water-val">0.0</span> <span class="text-lg">L</span></p>
-                        <p class="text-xs text-slate-400">Consumidos hoje (<span id="pt-water-cups">0</span> copos)</p>
+                    <div id="dash-routine-summary" class="space-y-3">
+                        <!-- Inserido dinamicamente via JS -->
                     </div>
-                </div>
 
-                <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50 text-xs text-slate-400 text-center">
-                    <i class="fa-solid fa-circle-info text-brand-400"></i> Acompanhamento automático sincronizado com a App do Aluno.
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- 6. NOTAS DO PERSONAL TRAINER -->
-    <section id="tab-notes" class="tab-content space-y-6">
-        <div>
-            <h2 class="text-2xl font-bold text-white">Acompanhamento e Anotações Técnicas</h2>
-            <p class="text-slate-400 text-sm">Guarde registos de lesões, objetivos trimestrais e histórico de avaliações do aluno.</p>
-        </div>
-
-        <div class="bg-dark-card p-6 rounded-2xl border border-dark-border space-y-4">
-            <label class="block text-sm font-bold text-slate-200">Prontuário / Notas Privadas do Aluno</label>
-            <textarea id="full-trainer-notes" rows="12" placeholder="Exemplo: Aluno relata desconforto no ombro direito no supino acima dos 80kg. Foco em fortalecimento da manguito rotador. Dieta atualizada em 10/10." class="w-full bg-slate-800 text-sm text-white p-4 rounded-xl border border-dark-border outline-none focus:border-brand-500 custom-scrollbar resize-y"></textarea>
-            
-            <div class="flex justify-between items-center pt-2">
-                <span class="text-xs text-slate-500">Guardado localmente em PTPortalDB</span>
-                <button onclick="saveFullNotes()" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-black font-extrabold rounded-xl text-xs transition neon-glow">
-                    <i class="fa-solid fa-floppy-disk mr-1"></i> Guardar Anotações
-                </button>
-            </div>
-        </div>
-    </section>
-
-</main>
-
-<!-- NAVEGAÇÃO INFERIOR MOBILE -->
-<nav class="md:hidden fixed bottom-0 left-0 right-0 bg-dark-card border-t border-dark-border px-2 py-2 flex justify-around items-center z-40">
-    <button onclick="switchTab('dashboard')" class="mobile-nav-btn p-2 text-center text-brand-400 font-bold active-nav" data-tab="dashboard">
-        <i class="fa-solid fa-chart-pie text-lg block"></i>
-        <span class="text-[10px] mt-0.5 block">Geral</span>
-    </button>
-    <button onclick="switchTab('metrics')" class="mobile-nav-btn p-2 text-center text-slate-400 hover:text-brand-400" data-tab="metrics">
-        <i class="fa-solid fa-chart-line text-lg block"></i>
-        <span class="text-[10px] mt-0.5 block">Evolução</span>
-    </button>
-    <button onclick="switchTab('workouts')" class="mobile-nav-btn p-2 text-center text-slate-400 hover:text-brand-400" data-tab="workouts">
-        <i class="fa-solid fa-dumbbell text-lg block"></i>
-        <span class="text-[10px] mt-0.5 block">Treinos</span>
-    </button>
-    <button onclick="switchTab('prescribe')" class="mobile-nav-btn p-2 text-center text-slate-400 hover:text-brand-400" data-tab="prescribe">
-        <i class="fa-solid fa-pen-to-square text-lg block"></i>
-        <span class="text-[10px] mt-0.5 block">Prescrever</span>
-    </button>
-    <button onclick="switchTab('nutrition')" class="mobile-nav-btn p-2 text-center text-slate-400 hover:text-brand-400" data-tab="nutrition">
-        <i class="fa-solid fa-apple-whole text-lg block"></i>
-        <span class="text-[10px] mt-0.5 block">Nutrição</span>
-    </button>
-</nav>
-
-<!-- MODAL IMPORTAÇÃO / SINCRONIZAÇÃO JSON -->
-<div id="sync-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-dark-card border border-brand-500/30 p-6 rounded-2xl w-full max-w-lg space-y-5 relative shadow-2xl">
-        <button onclick="closeModal('sync-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
-            <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-        <div class="flex items-center space-x-3">
-            <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center font-bold text-xl border border-brand-500/30">
-                <i class="fa-solid fa-file-import"></i>
-            </div>
-            <div>
-                <h3 class="text-xl font-bold text-white">Importar Dados do Aluno</h3>
-                <p class="text-xs text-slate-400">Carregue o ficheiro JSON de backup do aluno para o Portal.</p>
-            </div>
-        </div>
-
-        <div class="space-y-4">
-            <div class="p-4 border-2 border-dashed border-slate-700 hover:border-brand-500 rounded-2xl text-center bg-slate-800/40 cursor-pointer transition" onclick="document.getElementById('file-input-json').click()">
-                <i class="fa-solid fa-cloud-arrow-up text-3xl text-brand-400 mb-2"></i>
-                <p class="text-xs font-semibold text-white">Clique para selecionar o ficheiro .JSON</p>
-                <p class="text-[10px] text-slate-500 mt-1">Compatível com backups exportados do PM Studio App</p>
-                <input type="file" id="file-input-json" accept=".json" class="hidden" onchange="handleJSONImport(event)">
-            </div>
-
-            <div class="text-center text-xs text-slate-500">OU cole a estrutura JSON diretamente abaixo:</div>
-
-            <textarea id="json-paste-area" rows="4" placeholder='{"perfil": {...}, "peso": [...]}' class="w-full bg-slate-800 text-xs text-slate-300 p-3 rounded-xl border border-dark-border outline-none focus:border-brand-500 font-mono resize-none"></textarea>
-
-            <button onclick="handlePastedJSONImport()" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-black font-extrabold rounded-xl text-xs transition neon-glow">
-                Processar e Sincronizar Dados
-            </button>
-        </div>
-    </div>
-</div>
-
-<!-- MODAL ADICIONAR NOVO ALUNO -->
-<div id="add-student-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-dark-card border border-dark-border p-6 rounded-2xl w-full max-w-md space-y-4 relative shadow-2xl">
-        <button onclick="closeModal('add-student-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
-            <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-        <h3 class="text-xl font-bold text-white">Registar Novo Aluno</h3>
-        
-        <form id="form-add-student" onsubmit="handleAddNewStudent(event)" class="space-y-3">
-            <div>
-                <label class="block text-xs font-semibold text-slate-300 mb-1">Nome Completo</label>
-                <input type="text" id="new-student-name" required placeholder="Ex: Maria Santos" class="w-full bg-slate-800 text-white text-xs p-3 rounded-xl border border-dark-border outline-none focus:border-brand-500">
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Peso Inicial (kg)</label>
-                    <input type="number" step="0.1" id="new-student-weight" required placeholder="Ex: 68.0" class="w-full bg-slate-800 text-white text-xs p-3 rounded-xl border border-dark-border outline-none focus:border-brand-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">% Gordura Inicial</label>
-                    <input type="number" step="0.1" id="new-student-fat" placeholder="Ex: 22.0" class="w-full bg-slate-800 text-white text-xs p-3 rounded-xl border border-dark-border outline-none focus:border-brand-500">
-                </div>
-            </div>
-            <button type="submit" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-black font-extrabold rounded-xl text-xs transition mt-2 neon-glow">
-                Criar Perfil de Aluno
-            </button>
-        </form>
-    </div>
-</div>
-
-<!-- MODAL REGISTAR NOVA MEDIDA MANUAL -->
-<div id="add-metric-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-    <div class="bg-dark-card border border-dark-border p-6 rounded-2xl w-full max-w-md space-y-4 relative">
-        <button onclick="closeModal('add-metric-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
-            <i class="fa-solid fa-xmark text-lg"></i>
-        </button>
-        <h3 class="text-xl font-bold text-white">Registar Medida do Aluno</h3>
-        
-        <form id="form-add-metric" onsubmit="handleMetricSubmit(event)" class="space-y-3">
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">Data</label>
-                <input type="date" id="input-metric-date" required class="w-full bg-slate-800 border border-dark-border text-white text-sm p-3 rounded-xl outline-none focus:border-brand-500">
-            </div>
-            <div class="grid grid-cols-2 gap-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Peso (kg)</label>
-                    <input type="number" step="0.1" id="input-metric-weight" placeholder="Ex: 78.5" required class="w-full bg-slate-800 border border-dark-border text-white text-sm p-3 rounded-xl outline-none focus:border-brand-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">% Gordura</label>
-                    <input type="number" step="0.1" id="input-metric-fat" placeholder="Ex: 14.5" class="w-full bg-slate-800 border border-dark-border text-white text-sm p-3 rounded-xl outline-none focus:border-brand-500">
-                </div>
-            </div>
-            <div class="grid grid-cols-3 gap-2">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Braço (cm)</label>
-                    <input type="number" step="0.5" id="input-metric-arm" placeholder="38" class="w-full bg-slate-800 border border-dark-border text-white text-sm p-2.5 rounded-xl outline-none focus:border-brand-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Cintura (cm)</label>
-                    <input type="number" step="0.5" id="input-metric-waist" placeholder="81" class="w-full bg-slate-800 border border-dark-border text-white text-sm p-2.5 rounded-xl outline-none focus:border-brand-500">
-                </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Peito (cm)</label>
-                    <input type="number" step="0.5" id="input-metric-chest" placeholder="102" class="w-full bg-slate-800 border border-dark-border text-white text-sm p-2.5 rounded-xl outline-none focus:border-brand-500">
-                </div>
-            </div>
-            <button type="submit" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-black font-bold rounded-xl text-sm transition mt-4 neon-glow">
-                Guardar no Portal DB
-            </button>
-        </form>
-    </div>
-</div>
-
-<!-- NOTIFICAÇÃO TOAST CUSTOMIZADA -->
-<div id="toast-notification" class="fixed bottom-20 md:bottom-8 right-4 bg-brand-500 text-black px-5 py-3 rounded-2xl font-bold shadow-2xl z-50 transform translate-y-32 transition-transform duration-300 flex items-center space-x-3">
-    <i class="fa-solid fa-circle-check text-lg"></i>
-    <span id="toast-message" class="text-sm">Ação efetuada com sucesso!</span>
-</div>
-
-<!-- LÓGICA JAVASCRIPT & WRAPPER INDEXEDDB DO PORTAL -->
-<script>
-    /* =============================================================
-       REGISTO DO SERVICE WORKER (PWA)
-       ============================================================= */
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', () => {
-            navigator.serviceWorker.register('./sw.js')
-                .then((reg) => console.log('Service Worker registado com sucesso:', reg.scope))
-                .catch((err) => console.log('Falha ao registar Service Worker:', err));
-        });
-    }
-
-    /* =============================================================
-       1. WRAPPER INDEXEDDB DO PORTAL (PTPortalDB)
-       ============================================================= */
-    const DB_NAME = 'PTPortalDB';
-    const DB_VERSION = 1;
-
-    class PTPortalDB {
-        constructor() {
-            this.db = null;
-        }
-
-        async init() {
-            return new Promise((resolve, reject) => {
-                const request = indexedDB.open(DB_NAME, DB_VERSION);
-
-                request.onupgradeneeded = (e) => {
-                    const db = e.target.result;
-
-                    // Store 1: Perfis dos Alunos
-                    if (!db.objectStoreNames.contains('alunos')) {
-                        db.createObjectStore('alunos', { keyPath: 'id' });
-                    }
-
-                    // Store 2: Medidas Corporais por Aluno
-                    if (!db.objectStoreNames.contains('medidas')) {
-                        const store = db.createObjectStore('medidas', { keyPath: 'id', autoIncrement: true });
-                        store.createIndex('studentId', 'studentId', { unique: false });
-                    }
-
-                    // Store 3: Cargas / Testes de Força por Aluno
-                    if (!db.objectStoreNames.contains('forca')) {
-                        const store = db.createObjectStore('forca', { keyPath: 'id', autoIncrement: true });
-                        store.createIndex('studentId', 'studentId', { unique: false });
-                    }
-
-                    // Store 4: Fichas de Treino Prescritas por Aluno
-                    if (!db.objectStoreNames.contains('fichas')) {
-                        const store = db.createObjectStore('fichas', { keyPath: 'key' }); // key: `${studentId}_${routineCode}`
-                    }
-
-                    // Store 5: Nutrição Diária por Aluno
-                    if (!db.objectStoreNames.contains('nutricao')) {
-                        const store = db.createObjectStore('nutricao', { keyPath: 'key' }); // key: `${studentId}_${date}`
-                    }
-
-                    // Store 6: Notas do Treinador por Aluno
-                    if (!db.objectStoreNames.contains('notas')) {
-                        db.createObjectStore('notas', { keyPath: 'studentId' });
-                    }
-                };
-
-                request.onsuccess = (e) => {
-                    this.db = e.target.result;
-                    resolve(this.db);
-                };
-
-                request.onerror = (e) => reject('Erro ao abrir PTPortalDB: ' + e.target.error);
-            });
-        }
-
-        async getAll(storeName) {
-            return new Promise((resolve, reject) => {
-                const tx = this.db.transaction(storeName, 'readonly');
-                const store = tx.objectStore(storeName);
-                const req = store.getAll();
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
-            });
-        }
-
-        async get(storeName, key) {
-            return new Promise((resolve, reject) => {
-                const tx = this.db.transaction(storeName, 'readonly');
-                const store = tx.objectStore(storeName);
-                const req = store.get(key);
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
-            });
-        }
-
-        async put(storeName, item) {
-            return new Promise((resolve, reject) => {
-                const tx = this.db.transaction(storeName, 'readwrite');
-                const store = tx.objectStore(storeName);
-                const req = store.put(item);
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
-            });
-        }
-
-        async add(storeName, item) {
-            return new Promise((resolve, reject) => {
-                const tx = this.db.transaction(storeName, 'readwrite');
-                const store = tx.objectStore(storeName);
-                const req = store.add(item);
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
-            });
-        }
-
-        async getByIndex(storeName, indexName, value) {
-            return new Promise((resolve, reject) => {
-                const tx = this.db.transaction(storeName, 'readonly');
-                const store = tx.objectStore(storeName);
-                const index = store.index(indexName);
-                const req = index.getAll(value);
-                req.onsuccess = () => resolve(req.result);
-                req.onerror = () => reject(req.error);
-            });
-        }
-    }
-
-    const portalDB = new PTPortalDB();
-
-    /* =============================================================
-       2. ESTADO GLOBAL E POPULAÇÃO INICIAL DE TESTES
-       ============================================================= */
-    let activeStudentId = 'student_1';
-    let weightChartInstance = null;
-    let strengthChartInstance = null;
-    let currentPTRoutineTab = 'A';
-
-    async function setupInitialDataIfEmpty() {
-        const alunos = await portalDB.getAll('alunos');
-        if (alunos.length === 0) {
-            // Aluno 1 Demonstração
-            await portalDB.put('alunos', {
-                id: 'student_1',
-                name: 'João Silva',
-                streak: 12,
-                xp: 450,
-                level: 2,
-                completedWorkoutsMonth: 14
-            });
-
-            // Aluno 2 Demonstração
-            await portalDB.put('alunos', {
-                id: 'student_2',
-                name: 'Ana Pereira',
-                streak: 5,
-                xp: 200,
-                level: 1,
-                completedWorkoutsMonth: 8
-            });
-
-            const today = new Date().toISOString().split('T')[0];
-
-            // Medidas Iniciais João
-            await portalDB.add('medidas', { studentId: 'student_1', date: '2026-10-01', weight: 81.0, fat: 18.0, arm: 37, waist: 84, chest: 100 });
-            await portalDB.add('medidas', { studentId: 'student_1', date: '2026-10-15', weight: 79.5, fat: 17.2, arm: 37.5, waist: 82.5, chest: 101 });
-            await portalDB.add('medidas', { studentId: 'student_1', date: today, weight: 78.8, fat: 16.5, arm: 38, waist: 81, chest: 102 });
-
-            // Cargas João
-            await portalDB.add('forca', { studentId: 'student_1', exercise: 'Supino Reto com Barra', date: '2026-10-01', load: 60 });
-            await portalDB.add('forca', { studentId: 'student_1', exercise: 'Supino Reto com Barra', date: '2026-10-15', load: 70 });
-            await portalDB.add('forca', { studentId: 'student_1', exercise: 'Supino Reto com Barra', date: today, load: 75 });
-
-            // Ficha A João
-            await portalDB.put('fichas', {
-                key: 'student_1_A',
-                studentId: 'student_1',
-                routineCode: 'A',
-                title: "Treino A - Peito & Tríceps",
-                exercises: [
-                    { name: "Supino Reto com Barra", sets: [{kg: 75, reps: 8, done: true}, {kg: 75, reps: 8, done: true}, {kg: 75, reps: 6, done: true}] },
-                    { name: "Supino Inclinado c/ Halteres", sets: [{kg: 24, reps: 10, done: true}, {kg: 24, reps: 10, done: true}] },
-                    { name: "Tríceps na Polia Alta", sets: [{kg: 35, reps: 12, done: true}, {kg: 35, reps: 12, done: true}] }
-                ]
-            });
-
-            // Ficha B João
-            await portalDB.put('fichas', {
-                key: 'student_1_B',
-                studentId: 'student_1',
-                routineCode: 'B',
-                title: "Treino B - Costas & Bíceps",
-                exercises: [
-                    { name: "Puxada à Frente na Polia", sets: [{kg: 50, reps: 10, done: false}, {kg: 55, reps: 8, done: false}] },
-                    { name: "Remada Curvada com Barra", sets: [{kg: 40, reps: 10, done: false}, {kg: 45, reps: 10, done: false}] }
-                ]
-            });
-
-            // Nutrição João
-            await portalDB.put('nutricao', {
-                key: `student_1_${today}`,
-                studentId: 'student_1',
-                date: today,
-                water: 2.5,
-                cals: 2150,
-                prot: 165,
-                carbs: 210,
-                fat: 55
-            });
-
-            // Nota João
-            await portalDB.put('notas', {
-                studentId: 'student_1',
-                text: 'Aluno a progredir bem no supino. Foco nas próximas 2 semanas: estabilizar escápulas no supino inclinado.'
-            });
-        }
-    }
-
-    /* =============================================================
-       3. SINCRONIZAÇÃO DA INTERFACE DO PORTAL
-       ============================================================= */
-    function getInitials(name) {
-        if (!name) return '--';
-        const parts = name.trim().split(' ');
-        if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
-        return parts[0].substring(0, 2).toUpperCase();
-    }
-
-    async function populateStudentDropdowns() {
-        const alunos = await portalDB.getAll('alunos');
-        const sideSelect = document.getElementById('sidebar-student-select');
-        const mobSelect = document.getElementById('mobile-student-select');
-
-        sideSelect.innerHTML = '';
-        mobSelect.innerHTML = '';
-
-        alunos.forEach(a => {
-            const opt1 = document.createElement('option');
-            opt1.value = a.id;
-            opt1.innerText = a.name;
-            if (a.id === activeStudentId) opt1.selected = true;
-            sideSelect.appendChild(opt1);
-
-            const opt2 = document.createElement('option');
-            opt2.value = a.id;
-            opt2.innerText = a.name;
-            if (a.id === activeStudentId) opt2.selected = true;
-            mobSelect.appendChild(opt2);
-        });
-    }
-
-    async function changeStudent(studentId) {
-        activeStudentId = studentId;
-        document.getElementById('sidebar-student-select').value = studentId;
-        document.getElementById('mobile-student-select').value = studentId;
-
-        await refreshPortalUI();
-    }
-
-    async function refreshPortalUI() {
-        const student = await portalDB.get('alunos', activeStudentId);
-        if (!student) return;
-
-        // Header/Banner do Aluno
-        document.getElementById('student-name-display').innerText = student.name;
-        document.getElementById('student-avatar-large').innerText = getInitials(student.name);
-        document.getElementById('student-level-badge').innerText = `Nível ${student.level || 1}`;
-        document.getElementById('student-streak-display').innerText = student.streak || 0;
-        document.getElementById('student-xp-display').innerText = student.xp || 0;
-        document.getElementById('student-workouts-display').innerText = student.completedWorkoutsMonth || 0;
-
-        // Medidas do Aluno
-        const medidas = await portalDB.getByIndex('medidas', 'studentId', activeStudentId);
-        medidas.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        if (medidas.length > 0) {
-            const last = medidas[medidas.length - 1];
-            document.getElementById('dash-weight').innerText = last.weight;
-            document.getElementById('dash-fat').innerText = last.fat || '--';
-        } else {
-            document.getElementById('dash-weight').innerText = '--';
-            document.getElementById('dash-fat').innerText = '--';
-        }
-
-        // Nutrição do Aluno Hoje
-        const today = new Date().toISOString().split('T')[0];
-        const nutricao = await portalDB.get('nutricao', `${activeStudentId}_${today}`) || { water: 0, cals: 0, prot: 0, carbs: 0, fat: 0 };
-
-        document.getElementById('dash-cals').innerText = nutricao.cals;
-        document.getElementById('dash-water').innerText = nutricao.water.toFixed(1);
-
-        document.getElementById('pt-cals-ingested').innerText = nutricao.cals;
-        document.getElementById('pt-cals-bar').style.width = `${Math.min(100, (nutricao.cals / 2400) * 100)}%`;
-        document.getElementById('pt-prot-ingested').innerText = nutricao.prot;
-        document.getElementById('pt-prot-bar').style.width = `${Math.min(100, (nutricao.prot / 180) * 100)}%`;
-        document.getElementById('pt-carbs-ingested').innerText = nutricao.carbs;
-        document.getElementById('pt-carbs-bar').style.width = `${Math.min(100, (nutricao.carbs / 270) * 100)}%`;
-        document.getElementById('pt-fat-ingested').innerText = nutricao.fat;
-        document.getElementById('pt-fat-bar').style.width = `${Math.min(100, (nutricao.fat / 65) * 100)}%`;
-
-        document.getElementById('pt-water-val').innerText = nutricao.water.toFixed(1);
-        document.getElementById('pt-water-cups').innerText = Math.round(nutricao.water / 0.25);
-
-        // Notas do Treinador
-        const nota = await portalDB.get('notas', activeStudentId);
-        const notaText = nota ? nota.text : '';
-        document.getElementById('quick-trainer-note').value = notaText;
-        document.getElementById('full-trainer-notes').value = notaText;
-
-        // Renderizar Componentes
-        await renderDashboardRoutineSummary();
-        await renderStudentBadges(student);
-        renderMetricsTable(medidas);
-        await renderPTRoutine(currentPTRoutineTab);
-        await loadPrescriptionRoutine(document.getElementById('prescribe-routine-select').value);
-        renderCharts();
-    }
-
-    /* =============================================================
-       4. RESUMO DA FICHA E CONQUISTAS
-       ============================================================= */
-    async function renderDashboardRoutineSummary() {
-        const container = document.getElementById('dash-routine-summary');
-        container.innerHTML = '';
-
-        const ficha = await portalDB.get('fichas', `${activeStudentId}_A`);
-        if (!ficha || !ficha.exercises) {
-            container.innerHTML = `<p class="text-xs text-slate-500 py-2">Nenhuma ficha prescrita de momento.</p>`;
-            return;
-        }
-
-        ficha.exercises.slice(0, 3).forEach((ex, idx) => {
-            const completedSets = ex.sets ? ex.sets.filter(s => s.done).length : 0;
-            const totalSets = ex.sets ? ex.sets.length : 0;
-
-            const item = document.createElement('div');
-            item.className = "flex items-center justify-between p-3 bg-slate-800/60 rounded-xl border border-slate-700/50";
-            item.innerHTML = `
-                <div class="flex items-center space-x-3">
-                    <div class="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-xs font-bold text-brand-400">${idx + 1}</div>
-                    <div>
-                        <p class="text-sm font-semibold text-white">${ex.name}</p>
-                        <p class="text-xs text-slate-400">${totalSets} séries agendadas</p>
-                    </div>
-                </div>
-                <span class="text-xs ${completedSets === totalSets && totalSets > 0 ? 'text-brand-400' : 'text-slate-400'} font-semibold">
-                    ${completedSets}/${totalSets} concluídas
-                </span>
-            `;
-            container.appendChild(item);
-        });
-    }
-
-    async function renderStudentBadges(student) {
-        const container = document.getElementById('dash-badges-grid');
-        container.innerHTML = '';
-
-        const badges = [
-            { title: "Oficial", icon: "fa-user-check", active: true },
-            { title: "Regular", icon: "fa-dumbbell", active: (student.completedWorkoutsMonth || 0) >= 8 },
-            { title: "Em Fogo", icon: "fa-fire", active: (student.streak || 0) >= 5 },
-            { title: "Hidratado", icon: "fa-glass-water", active: true },
-            { title: "Campeão", icon: "fa-trophy", active: (student.level || 1) >= 2 }
-        ];
-
-        badges.forEach(b => {
-            const card = document.createElement('div');
-            card.className = `p-3 rounded-xl border text-center ${b.active ? 'bg-slate-800/80 border-brand-500/40 text-brand-400' : 'bg-slate-900/40 border-dark-border text-slate-600'}`;
-            card.innerHTML = `
-                <i class="fa-solid ${b.icon} text-lg mb-1"></i>
-                <p class="text-[10px] font-bold truncate">${b.title}</p>
-            `;
-            container.appendChild(card);
-        });
-    }
-
-    /* =============================================================
-       5. GRÁFICOS CHART.JS DO PORTAL
-       ============================================================= */
-    async function renderCharts() {
-        const medidas = await portalDB.getByIndex('medidas', 'studentId', activeStudentId);
-        medidas.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        // Chart Peso
-        const ctxWeight = document.getElementById('ptWeightChart').getContext('2d');
-        if (weightChartInstance) weightChartInstance.destroy();
-
-        weightChartInstance = new Chart(ctxWeight, {
-            type: 'line',
-            data: {
-                labels: medidas.map(m => m.date),
-                datasets: [{
-                    label: 'Peso (kg)',
-                    data: medidas.map(m => m.weight),
-                    borderColor: '#ccff00',
-                    backgroundColor: 'rgba(204, 255, 0, 0.1)',
-                    borderWidth: 3,
-                    fill: true,
-                    tension: 0.3,
-                    pointBackgroundColor: '#ccff00',
-                    pointRadius: 5
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { color: '#2a2a2a' }, ticks: { color: '#94a3b8' } },
-                    y: { grid: { color: '#2a2a2a' }, ticks: { color: '#94a3b8' } }
-                }
-            }
-        });
-
-        // Chart Força
-        const selectedEx = document.getElementById('pt-exercise-chart-select').value;
-        const forcaData = await portalDB.getByIndex('forca', 'studentId', activeStudentId);
-        const filtered = forcaData.filter(f => f.exercise === selectedEx);
-        filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
-
-        const ctxStrength = document.getElementById('ptStrengthChart').getContext('2d');
-        if (strengthChartInstance) strengthChartInstance.destroy();
-
-        strengthChartInstance = new Chart(ctxStrength, {
-            type: 'bar',
-            data: {
-                labels: filtered.map(d => d.date),
-                datasets: [{
-                    label: 'Carga (kg)',
-                    data: filtered.map(d => d.load),
-                    backgroundColor: '#00f0ff',
-                    borderRadius: 8
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: { legend: { display: false } },
-                scales: {
-                    x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
-                    y: { grid: { color: '#2a2a2a' }, ticks: { color: '#94a3b8' } }
-                }
-            }
-        });
-    }
-
-    function renderMetricsTable(medidas) {
-        const tbody = document.getElementById('pt-metrics-table-body');
-        tbody.innerHTML = '';
-        const sorted = [...medidas].reverse();
-        sorted.forEach(m => {
-            const tr = document.createElement('tr');
-            tr.innerHTML = `
-                <td class="p-3 font-medium text-white">${m.date}</td>
-                <td class="p-3 text-brand-400 font-bold">${m.weight} kg</td>
-                <td class="p-3">${m.fat || '-'}%</td>
-                <td class="p-3">${m.arm || '-'} cm</td>
-                <td class="p-3">${m.waist || '-'} cm</td>
-                <td class="p-3">${m.chest || '-'} cm</td>
-            `;
-            tbody.appendChild(tr);
-        });
-    }
-
-    /* =============================================================
-       6. CONSULTA DE DIÁRIO DE TREINOS
-       ============================================================= */
-    async function selectRoutineTab(code) {
-        currentPTRoutineTab = code;
-        document.querySelectorAll('.pt-routine-tab-btn').forEach(btn => {
-            btn.classList.remove('bg-brand-500', 'text-black');
-            btn.classList.add('text-slate-400');
-        });
-        const activeBtn = document.getElementById(`btn-pt-routine-${code}`);
-        activeBtn.classList.add('bg-brand-500', 'text-black');
-        activeBtn.classList.remove('text-slate-400');
-
-        await renderPTRoutine(code);
-    }
-
-    async function renderPTRoutine(code) {
-        const ficha = await portalDB.get('fichas', `${activeStudentId}_${code}`);
-        const container = document.getElementById('pt-workout-routine-container');
-        container.innerHTML = '';
-
-        if (!ficha || !ficha.exercises || ficha.exercises.length === 0) {
-            container.innerHTML = `<p class="text-xs text-slate-500 py-4">Sem exercícios prescritos para a Ficha ${code}.</p>`;
-            return;
-        }
-
-        ficha.exercises.forEach((ex, exIndex) => {
-            const card = document.createElement('div');
-            card.className = "bg-dark-card p-5 rounded-2xl border border-dark-border space-y-3";
-
-            let setsHTML = '';
-            ex.sets.forEach((s, sIdx) => {
-                setsHTML += `
-                    <div class="flex items-center justify-between bg-slate-800/50 p-2.5 rounded-xl border border-slate-700/40 text-xs">
-                        <span class="font-bold text-slate-400">Série #${sIdx + 1}</span>
-                        <span class="text-white font-semibold">${s.kg} kg</span>
-                        <span class="text-slate-300">${s.reps} reps</span>
-                        <span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.done ? 'bg-brand-500/20 text-brand-400' : 'bg-slate-700 text-slate-400'}">
-                            ${s.done ? 'Concluída' : 'Pendente'}
-                        </span>
-                    </div>
-                `;
-            });
-
-            card.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <h4 class="font-bold text-white text-sm">${ex.name}</h4>
-                    <span class="text-xs text-brand-accent font-medium">${ex.sets.length} séries</span>
-                </div>
-                <div class="space-y-2">
-                    ${setsHTML}
-                </div>
-            `;
-            container.appendChild(card);
-        });
-    }
-
-    /* =============================================================
-       7. PRESCRIÇÃO E EDIÇÃO DE TREINO
-       ============================================================= */
-    let currentEditingRoutineObj = null;
-
-    async function loadPrescriptionRoutine(code) {
-        let ficha = await portalDB.get('fichas', `${activeStudentId}_${code}`);
-        if (!ficha) {
-            ficha = {
-                key: `${activeStudentId}_${code}`,
-                studentId: activeStudentId,
-                routineCode: code,
-                title: `Treino ${code}`,
-                exercises: []
-            };
-        }
-        currentEditingRoutineObj = ficha;
-
-        const list = document.getElementById('prescription-exercises-list');
-        list.innerHTML = '';
-
-        if (ficha.exercises.length === 0) {
-            list.innerHTML = `<p class="text-xs text-slate-500 py-2">Ficha vazia. Clique em 'Adicionar Novo Exercício' para prescrever.</p>`;
-            return;
-        }
-
-        ficha.exercises.forEach((ex, exIndex) => {
-            const item = document.createElement('div');
-            item.className = "p-4 bg-slate-800/60 rounded-xl border border-slate-700/50 space-y-3";
-            item.innerHTML = `
-                <div class="flex justify-between items-center gap-2">
-                    <input type="text" value="${ex.name}" onchange="updatePrescriptionExName(${exIndex}, this.value)" placeholder="Nome do Exercício" class="bg-slate-700 text-xs font-bold text-white p-2 rounded-lg outline-none focus:border-brand-500 w-full border border-slate-600">
-                    <button onclick="removeExerciseFromPrescription(${exIndex})" class="p-2 text-rose-400 hover:bg-rose-500/10 rounded-lg transition">
-                        <i class="fa-solid fa-trash"></i>
+                    <button onclick="switchTab('prescribe')" class="w-full py-3 bg-slate-800 hover:bg-slate-700 text-brand-400 font-semibold rounded-xl text-sm transition border border-brand-500/20 flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-pen-to-square"></i> Editar / Modificar Ficha de Treino
                     </button>
                 </div>
 
-                <div class="flex items-center space-x-2 text-xs">
-                    <span class="text-slate-400">N.º de Séries:</span>
-                    <input type="number" value="${ex.sets.length}" onchange="updatePrescriptionExSetsCount(${exIndex}, this.value)" class="w-16 bg-slate-700 text-white p-1 rounded text-center outline-none border border-slate-600">
-                    <span class="text-slate-400">Carga Base (kg):</span>
-                    <input type="number" value="${ex.sets[0] ? ex.sets[0].kg : 0}" onchange="updatePrescriptionExDefaultKg(${exIndex}, this.value)" class="w-16 bg-slate-700 text-white p-1 rounded text-center outline-none border border-slate-600">
+                <!-- Painel Rápido de Observações -->
+                <div class="bg-dark-card p-6 rounded-2xl border border-dark-border flex flex-col justify-between">
+                    <div>
+                        <h3 class="font-bold text-lg text-white mb-3 flex items-center gap-2">
+                            <i class="fa-solid fa-user-doctor text-brand-accent"></i> Anotações do Trainer
+                        </h3>
+                        <textarea id="quick-trainer-note" rows="5" placeholder="Observações de postura, ajustes de carga ou dieta para este atleta..." class="w-full bg-slate-800/80 text-xs text-slate-200 border border-dark-border rounded-xl p-3 outline-none focus:border-brand-500 custom-scrollbar resize-none"></textarea>
+                    </div>
+                    <button onclick="saveQuickNote()" class="mt-4 w-full py-2.5 bg-brand-500 hover:bg-brand-600 text-black font-bold rounded-xl text-xs transition neon-glow">
+                        Guardar Anotação
+                    </button>
                 </div>
-            `;
-            list.appendChild(item);
-        });
-    }
+            </div>
 
-    function updatePrescriptionExName(exIndex, name) {
-        currentEditingRoutineObj.exercises[exIndex].name = name;
-    }
+            <!-- Badges e Conquistas do Aluno -->
+            <div class="bg-dark-card p-6 rounded-2xl border border-dark-border">
+                <h3 class="font-bold text-lg text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-trophy text-amber-400"></i> Desafios & Conquistas Desbloqueadas
+                </h3>
+                <div id="dash-badges-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
+                    <!-- Inserido dinamicamente via JS -->
+                </div>
+            </div>
+        </section>
 
-    function updatePrescriptionExDefaultKg(exIndex, kg) {
-        const num = parseFloat(kg) || 0;
-        currentEditingRoutineObj.exercises[exIndex].sets.forEach(s => s.kg = num);
-    }
+        <!-- 2. MÉTRICAS E EVOLUÇÃO -->
+        <section id="tab-metrics" class="tab-content space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Evolução Físico-Corporal do Atleta</h2>
+                    <p class="text-slate-400 text-sm">Acompanhe a progressão de peso, medidas antropométricas e cargas de trabalho.</p>
+                </div>
+                <button onclick="openModal('add-metric-modal')" class="px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-black font-bold rounded-xl text-sm transition flex items-center gap-2 neon-glow">
+                    <i class="fa-solid fa-plus"></i> Registar Nova Medida
+                </button>
+            </div>
 
-    function updatePrescriptionExSetsCount(exIndex, count) {
-        const target = parseInt(count) || 1;
-        const currentSets = currentEditingRoutineObj.exercises[exIndex].sets;
-        const baseKg = currentSets[0] ? currentSets[0].kg : 0;
+            <!-- Gráficos -->
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Gráfico de Peso -->
+                <div class="bg-dark-card p-5 rounded-2xl border border-dark-border">
+                    <div class="flex justify-between items-center mb-4">
+                        <h3 class="font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-weight-scale text-brand-500"></i> Progresso de Peso (kg)
+                        </h3>
+                        <span class="text-xs text-slate-400">Histórico de Dados</span>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="ptWeightChart"></canvas>
+                    </div>
+                </div>
 
-        if (target > currentSets.length) {
-            while (currentSets.length < target) {
-                currentSets.push({ kg: baseKg, reps: 10, done: false });
+                <!-- Gráfico de Cargas -->
+                <div class="bg-dark-card p-5 rounded-2xl border border-dark-border">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
+                        <h3 class="font-bold text-white flex items-center gap-2">
+                            <i class="fa-solid fa-dumbbell text-brand-accent"></i> Progressão de Cargas (Força)
+                        </h3>
+                        <select id="pt-exercise-chart-select" onchange="renderCharts()" class="bg-slate-800 text-xs text-white border border-dark-border rounded-lg px-2 py-1.5 outline-none focus:border-brand-500">
+                            <option value="Supino Reto com Barra">Supino Reto</option>
+                            <option value="Agachamento Livre">Agachamento</option>
+                            <option value="Levantamento Terra">Levantamento Terra</option>
+                            <option value="Puxada à Frente na Polia">Puxada à Frente</option>
+                        </select>
+                    </div>
+                    <div class="h-64">
+                        <canvas id="ptStrengthChart"></canvas>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tabela Histórica de Perímetros -->
+            <div class="bg-dark-card rounded-2xl border border-dark-border p-5">
+                <h3 class="font-bold text-white mb-4 flex items-center gap-2">
+                    <i class="fa-solid fa-ruler-combined text-slate-400"></i> Histórico de Perímetros & Composição
+                </h3>
+                <div class="overflow-x-auto custom-scrollbar">
+                    <table class="w-full text-left text-sm text-slate-300">
+                        <thead class="text-xs text-slate-400 uppercase bg-slate-800/60 border-b border-dark-border">
+                            <tr>
+                                <th class="p-3">Data</th>
+                                <th class="p-3">Peso (kg)</th>
+                                <th class="p-3">% Gordura</th>
+                                <th class="p-3">Braço (cm)</th>
+                                <th class="p-3">Cintura (cm)</th>
+                                <th class="p-3">Peito (cm)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pt-metrics-table-body" class="divide-y divide-dark-border">
+                            <!-- Inserido dinamicamente via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <!-- 3. FICHAS E DIÁRIO DE TREINOS DO ALUNO -->
+        <section id="tab-workouts" class="tab-content space-y-6">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div>
+                    <h2 class="text-2xl font-bold text-white">Diário de Treino & Registos do Aluno</h2>
+                    <p class="text-slate-400 text-sm">Inspecione os volumes, séries executadas e cargas efetuadas pelo atleta.</p>
+                </div>
+
+                <!-- Seletor de Fichas -->
+                <div class="flex bg-slate-800 p-1 rounded-xl border border-dark-border w-full md:w-auto">
+                    <button onclick="selectRoutineTab('A')" id="btn-pt-routine-A" class="pt-routine-tab-btn flex-1 md:flex-initial px-4 py-2 rounded-lg text-sm font-semibold transition bg-brand-500 text-black">Treino A</button>
+                    <button onclick="selectRoutineTab('B')" id="btn-pt-routine-B" class="pt-routine-tab-btn flex-1 md:flex-initial px-4 py-2 rounded-lg text-sm font-semibold transition text-slate-400 hover:text-white">Treino B</button>
+                    <button onclick="selectRoutineTab('C')" id="btn-pt-routine-C" class="pt-routine-tab-btn flex-1 md:flex-initial px-4 py-2 rounded-lg text-sm font-semibold transition text-slate-400 hover:text-white">Treino C</button>
+                </div>
+            </div>
+
+            <!-- Lista de Exercícios Executados -->
+            <div id="pt-workout-routine-container" class="space-y-4">
+                <!-- Gerado via JS -->
+            </div>
+        </section>
+
+        <!-- 4. PRESCREVER / EDITAR TREINOS -->
+        <section id="tab-prescribe" class="tab-content space-y-6">
+            <div>
+                <h2 class="text-2xl font-bold text-white">Prescrição de Treinos</h2>
+                <p class="text-slate-400 text-sm">Crie e atualize as fichas de treino do atleta selecionado.</p>
+            </div>
+
+            <div class="bg-dark-card p-6 rounded-2xl border border-dark-border space-y-5">
+                <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-dark-border">
+                    <div class="flex items-center space-x-3">
+                        <label class="text-xs font-bold uppercase text-slate-400">Ficha a Editar:</label>
+                        <select id="prescribe-routine-select" onchange="loadPrescriptionRoutine(this.value)" class="bg-slate-800 text-xs font-bold text-brand-400 border border-dark-border rounded-xl px-3 py-2 outline-none focus:border-brand-500">
+                            <option value="A">Treino A - Peito & Tríceps</option>
+                            <option value="B">Treino B - Costas & Bíceps</option>
+                            <option value="C">Treino C - Pernas & Ombros</option>
+                        </select>
+                    </div>
+
+                    <button onclick="addExerciseToPrescription()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-brand-400 font-semibold rounded-xl text-xs transition border border-dashed border-brand-500/30 flex items-center gap-1.5">
+                        <i class="fa-solid fa-plus"></i> Adicionar Exercício
+                    </button>
+                </div>
+
+                <!-- Lista Editável de Exercícios -->
+                <div id="prescription-exercises-list" class="space-y-4">
+                    <!-- Preenchido por JS -->
+                </div>
+
+                <div class="pt-4 border-t border-dark-border flex justify-end">
+                    <button onclick="saveRoutinePrescription()" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-black font-extrabold rounded-xl text-sm transition neon-glow flex items-center gap-2">
+                        <i class="fa-solid fa-floppy-disk"></i> Guardar Ficha Prescrita
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- 5. NUTRIÇÃO E HÁBITOS DO ALUNO -->
+        <section id="tab-nutrition" class="tab-content space-y-6">
+            <div>
+                <h2 class="text-2xl font-bold text-white">Acompanhamento Nutricional</h2>
+                <p class="text-slate-400 text-sm">Monitorize o cumprimento de calorias, macronutrientes e ingestão hídrica.</p>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                <!-- Cartão Calorias e Macros -->
+                <div class="lg:col-span-2 bg-dark-card p-6 rounded-2xl border border-dark-border space-y-6">
+                    <div class="flex justify-between items-center">
+                        <h3 class="font-bold text-white text-lg flex items-center gap-2">
+                            <i class="fa-solid fa-utensils text-brand-500"></i> Macronutrientes Registados Hoje
+                        </h3>
+                        <span class="text-xs text-slate-400">Meta Padrão: 2,400 kcal</span>
+                    </div>
+
+                    <div>
+                        <div class="flex justify-between text-sm mb-1">
+                            <span class="text-slate-300 font-medium">Consumo Calórico</span>
+                            <span class="text-white font-bold"><span id="pt-cals-ingested">0</span> / 2400 kcal</span>
+                        </div>
+                        <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
+                            <div id="pt-cals-bar" class="h-full bg-gradient-to-r from-brand-500 to-brand-accent rounded-full transition-all duration-300" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <!-- Barras dos Macros -->
+                    <div class="grid grid-cols-3 gap-4 pt-2">
+                        <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Proteína</span>
+                                <span class="text-brand-400 font-bold"><span id="pt-prot-ingested">0</span> / 180g</span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+                                <div id="pt-prot-bar" class="h-full bg-brand-500 transition-all duration-300" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Hidratos</span>
+                                <span class="text-amber-400 font-bold"><span id="pt-carbs-ingested">0</span> / 270g</span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+                                <div id="pt-carbs-bar" class="h-full bg-amber-500 transition-all duration-300" style="width: 0%;"></div>
+                            </div>
+                        </div>
+
+                        <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
+                            <div class="flex justify-between text-xs text-slate-400 mb-1">
+                                <span>Gordura</span>
+                                <span class="text-rose-400 font-bold"><span id="pt-fat-ingested">0</span> / 65g</span>
+                            </div>
+                            <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
+                                <div id="pt-fat-bar" class="h-full bg-rose-500 transition-all duration-300" style="width: 0%;"></div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Rastreio de Água -->
+                <div class="bg-dark-card p-6 rounded-2xl border border-dark-border flex flex-col justify-between space-y-6">
+                    <div>
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="font-bold text-white text-lg flex items-center gap-2">
+                                <i class="fa-solid fa-droplet text-blue-400"></i> Hidratação
+                            </h3>
+                            <span class="text-xs text-blue-400 font-semibold">Meta: 3.0 Litros</span>
+                        </div>
+
+                        <div class="text-center py-8 bg-slate-800/40 rounded-2xl border border-slate-700/50">
+                            <p class="text-4xl font-black text-blue-400 mb-1 font-mono"><span id="pt-water-val">0.0</span> <span class="text-lg">L</span></p>
+                            <p class="text-xs text-slate-400">Consumidos hoje (<span id="pt-water-cups">0</span> copos)</p>
+                        </div>
+                    </div>
+
+                    <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50 text-xs text-slate-400 text-center">
+                        <i class="fa-solid fa-circle-info text-brand-400"></i> Sincronizado automaticamente com os dados do cliente.
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- 6. NOTAS E OBSERVACÕES PRIVADAS -->
+        <section id="tab-notes" class="tab-content space-y-6">
+            <div>
+                <h2 class="text-2xl font-bold text-white">Anotações Clínicas & Técnicas</h2>
+                <p class="text-slate-400 text-sm">Guarde registos de restrições físicas, histórico de lesões e notas de acompanhamento.</p>
+            </div>
+
+            <div class="bg-dark-card p-6 rounded-2xl border border-dark-border space-y-4">
+                <label class="block text-sm font-bold text-slate-200">Prontuário Técnico do Aluno</label>
+                <textarea id="full-trainer-notes" rows="12" placeholder="Exemplo: Aluno relata desconforto no ombro direito durante o supino acima de 75kg. Reforçar trabalho de manguito rotador e estabilização de escápulas..." class="w-full bg-slate-800 text-sm text-white p-4 rounded-xl border border-dark-border outline-none focus:border-brand-500 custom-scrollbar resize-y"></textarea>
+                
+                <div class="flex justify-between items-center pt-2">
+                    <span class="text-xs text-slate-500">Guardado localmente no PTPortalDB</span>
+                    <button onclick="saveFullNotes()" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-black font-extrabold rounded-xl text-xs transition neon-glow">
+                        <i class="fa-solid fa-floppy-disk mr-1"></i> Guardar Anotações
+                    </button>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- NAVEGAÇÃO INFERIOR MOBILE -->
+    <nav class="md:hidden fixed bottom-0 left-0 right-0 bg-dark-card border-t border-dark-border px-2 py-2 flex justify-around items-center z-40">
+        <button onclick="switchTab('dashboard')" class="mobile-nav-btn p-2 text-center text-brand-400 font-bold active-nav" data-tab="dashboard">
+            <i class="fa-solid fa-chart-pie text-lg block"></i>
+            <span class="text-[10px] mt-0.5 block">Geral</span>
+        </button>
+        <button onclick="switchTab('metrics')" class="mobile-nav-btn p-2 text-center text-slate-400 hover:text-brand-400" data-tab="metrics">
+            <i class="fa-solid fa-chart-line text-lg block"></i>
+            <span class="text-[10px] mt-0.5 block">Evolução</span>
+        </button>
+        <button onclick="switchTab('workouts')" class="mobile-nav-btn p-2 text-center text-slate-400 hover:text-brand-400" data-tab="workouts">
+            <i class="fa-solid fa-dumbbell text-lg block"></i>
+            <span class="text-[10px] mt-0.5 block">Treinos</span>
+        </button>
+        <button onclick="switchTab('prescribe')" class="mobile-nav-btn p-2 text-center text-slate-400 hover:text-brand-400" data-tab="prescribe">
+            <i class="fa-solid fa-pen-to-square text-lg block"></i>
+            <span class="text-[10px] mt-0.5 block">Prescrever</span>
+        </button>
+        <button onclick="switchTab('nutrition')" class="mobile-nav-btn p-2 text-center text-slate-400 hover:text-brand-400" data-tab="nutrition">
+            <i class="fa-solid fa-apple-whole text-lg block"></i>
+            <span class="text-[10px] mt-0.5 block">Nutrição</span>
+        </button>
+    </nav>
+
+    <!-- MODAL IMPORTAÇÃO / SINCRONIZAÇÃO JSON DE ALUNOS DO PM STUDIO -->
+    <div id="sync-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-dark-card border border-brand-500/30 p-6 rounded-2xl w-full max-w-lg space-y-5 relative shadow-2xl">
+            <button onclick="closeModal('sync-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center font-bold text-xl border border-brand-500/30">
+                    <i class="fa-solid fa-file-import"></i>
+                </div>
+                <div>
+                    <h3 class="text-xl font-bold text-white">Importar Dados do Aluno (JSON)</h3>
+                    <p class="text-xs text-slate-400">Carregue o ficheiro ou estrutura de exportação do PM Studio App.</p>
+                </div>
+            </div>
+
+            <div class="space-y-4">
+                <div class="p-4 border-2 border-dashed border-slate-700 hover:border-brand-500 rounded-2xl text-center bg-slate-800/40 cursor-pointer transition" onclick="document.getElementById('file-input-json').click()">
+                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-brand-400 mb-2"></i>
+                    <p class="text-xs font-semibold text-white">Clique para carregar o ficheiro .JSON do Aluno</p>
+                    <p class="text-[10px] text-slate-500 mt-1">Compatível com o formato IndexedDB de exportação</p>
+                    <input type="file" id="file-input-json" accept=".json" class="hidden" onchange="handleJSONImport(event)">
+                </div>
+
+                <div class="text-center text-xs text-slate-500">OU cole o texto JSON no campo abaixo:</div>
+
+                <textarea id="json-paste-area" rows="4" placeholder='{"perfil": {...}, "peso": [...]}' class="w-full bg-slate-800 text-xs text-slate-300 p-3 rounded-xl border border-dark-border outline-none focus:border-brand-500 font-mono resize-none"></textarea>
+
+                <button onclick="handlePastedJSONImport()" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-black font-extrabold rounded-xl text-xs transition neon-glow">
+                    Processar e Importar Aluno
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL ADICIONAR NOVO ALUNO -->
+    <div id="add-student-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-dark-card border border-dark-border p-6 rounded-2xl w-full max-w-md space-y-4 relative shadow-2xl">
+            <button onclick="closeModal('add-student-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-xl font-bold text-white">Registar Novo Aluno</h3>
+            
+            <form id="form-add-student" onsubmit="handleAddNewStudent(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Nome Completo</label>
+                    <input type="text" id="new-student-name" required placeholder="Ex: Bernardo Silva" class="w-full bg-slate-800 text-white text-xs p-3 rounded-xl border border-dark-border outline-none focus:border-brand-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">Peso Inicial (kg)</label>
+                        <input type="number" step="0.1" id="new-student-weight" required placeholder="Ex: 75.0" class="w-full bg-slate-800 text-white text-xs p-3 rounded-xl border border-dark-border outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-300 mb-1">% Gordura Inicial</label>
+                        <input type="number" step="0.1" id="new-student-fat" placeholder="Ex: 16.0" class="w-full bg-slate-800 text-white text-xs p-3 rounded-xl border border-dark-border outline-none focus:border-brand-500">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-black font-extrabold rounded-xl text-xs transition mt-2 neon-glow">
+                    Criar Perfil no Portal
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL REGISTAR NOVA MEDIDA MANUAL -->
+    <div id="add-metric-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
+        <div class="bg-dark-card border border-dark-border p-6 rounded-2xl w-full max-w-md space-y-4 relative">
+            <button onclick="closeModal('add-metric-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
+                <i class="fa-solid fa-xmark text-lg"></i>
+            </button>
+            <h3 class="text-xl font-bold text-white">Registar Medida do Aluno</h3>
+            
+            <form id="form-add-metric" onsubmit="handleMetricSubmit(event)" class="space-y-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-400 mb-1">Data</label>
+                    <input type="date" id="input-metric-date" required class="w-full bg-slate-800 border border-dark-border text-white text-sm p-3 rounded-xl outline-none focus:border-brand-500">
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Peso (kg)</label>
+                        <input type="number" step="0.1" id="input-metric-weight" placeholder="Ex: 78.5" required class="w-full bg-slate-800 border border-dark-border text-white text-sm p-3 rounded-xl outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">% Gordura</label>
+                        <input type="number" step="0.1" id="input-metric-fat" placeholder="Ex: 14.5" class="w-full bg-slate-800 border border-dark-border text-white text-sm p-3 rounded-xl outline-none focus:border-brand-500">
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-2">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Braço (cm)</label>
+                        <input type="number" step="0.5" id="input-metric-arm" placeholder="38" class="w-full bg-slate-800 border border-dark-border text-white text-sm p-2.5 rounded-xl outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Cintura (cm)</label>
+                        <input type="number" step="0.5" id="input-metric-waist" placeholder="81" class="w-full bg-slate-800 border border-dark-border text-white text-sm p-2.5 rounded-xl outline-none focus:border-brand-500">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-400 mb-1">Peito (cm)</label>
+                        <input type="number" step="0.5" id="input-metric-chest" placeholder="102" class="w-full bg-slate-800 border border-dark-border text-white text-sm p-2.5 rounded-xl outline-none focus:border-brand-500">
+                    </div>
+                </div>
+                <button type="submit" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-black font-bold rounded-xl text-sm transition mt-4 neon-glow">
+                    Guardar no Portal DB
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- NOTIFICAÇÃO TOAST CUSTOMIZADA -->
+    <div id="toast-notification" class="fixed bottom-20 md:bottom-8 right-4 bg-brand-500 text-black px-5 py-3 rounded-2xl font-bold shadow-2xl z-50 transform translate-y-32 transition-transform duration-300 flex items-center space-x-3">
+        <i class="fa-solid fa-circle-check text-lg"></i>
+        <span id="toast-message" class="text-sm">Operação efetuada com sucesso!</span>
+    </div>
+
+    <!-- LÓGICA JAVASCRIPT & INDEXEDDB DO PORTAL DO PERSONAL TRAINER -->
+    <script>
+        /* =============================================================
+           1. ARMAZENAMENTO INDEXEDDB (PTPortalDB)
+           ============================================================= */
+        const DB_NAME = 'PTPortalDB';
+        const DB_VERSION = 1;
+
+        class PTPortalDB {
+            constructor() {
+                this.db = null;
             }
-        } else if (target < currentSets.length && target > 0) {
-            currentSets.splice(target);
+
+            async init() {
+                return new Promise((resolve, reject) => {
+                    const request = indexedDB.open(DB_NAME, DB_VERSION);
+
+                    request.onupgradeneeded = (e) => {
+                        const db = e.target.result;
+
+                        if (!db.objectStoreNames.contains('alunos')) {
+                            db.createObjectStore('alunos', { keyPath: 'id' });
+                        }
+                        if (!db.objectStoreNames.contains('medidas')) {
+                            const store = db.createObjectStore('medidas', { keyPath: 'id', autoIncrement: true });
+                            store.createIndex('studentId', 'studentId', { unique: false });
+                        }
+                        if (!db.objectStoreNames.contains('forca')) {
+                            const store = db.createObjectStore('forca', { keyPath: 'id', autoIncrement: true });
+                            store.createIndex('studentId', 'studentId', { unique: false });
+                        }
+                        if (!db.objectStoreNames.contains('fichas')) {
+                            db.createObjectStore('fichas', { keyPath: 'key' });
+                        }
+                        if (!db.objectStoreNames.contains('nutricao')) {
+                            db.createObjectStore('nutricao', { keyPath: 'key' });
+                        }
+                        if (!db.objectStoreNames.contains('notas')) {
+                            db.createObjectStore('notas', { keyPath: 'studentId' });
+                        }
+                    };
+
+                    request.onsuccess = (e) => {
+                        this.db = e.target.result;
+                        resolve(this.db);
+                    };
+
+                    request.onerror = (e) => reject('Erro ao inicializar PTPortalDB: ' + e.target.error);
+                });
+            }
+
+            async getAll(storeName) {
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(storeName, 'readonly');
+                    const store = tx.objectStore(storeName);
+                    const req = store.getAll();
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+
+            async get(storeName, key) {
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(storeName, 'readonly');
+                    const store = tx.objectStore(storeName);
+                    const req = store.get(key);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+
+            async put(storeName, item) {
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(storeName, 'readwrite');
+                    const store = tx.objectStore(storeName);
+                    const req = store.put(item);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+
+            async add(storeName, item) {
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(storeName, 'readwrite');
+                    const store = tx.objectStore(storeName);
+                    const req = store.add(item);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+
+            async getByIndex(storeName, indexName, value) {
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(storeName, 'readonly');
+                    const store = tx.objectStore(storeName);
+                    const index = store.index(indexName);
+                    const req = index.getAll(value);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
         }
-    }
 
-    function addExerciseToPrescription() {
-        if (!currentEditingRoutineObj) return;
-        currentEditingRoutineObj.exercises.push({
-            name: "Novo Exercício Prescrito",
-            sets: [{ kg: 20, reps: 10, done: false }, { kg: 20, reps: 10, done: false }]
-        });
-        loadPrescriptionRoutine(currentEditingRoutineObj.routineCode);
-    }
+        const portalDB = new PTPortalDB();
 
-    function removeExerciseFromPrescription(index) {
-        currentEditingRoutineObj.exercises.splice(index, 1);
-        loadPrescriptionRoutine(currentEditingRoutineObj.routineCode);
-    }
+        /* =============================================================
+           2. ESTADO E CARREGAMENTO INICIAL DE DEMO
+           ============================================================= */
+        let activeStudentId = 'student_1';
+        let weightChartInstance = null;
+        let strengthChartInstance = null;
+        let currentPTRoutineTab = 'A';
 
-    async function saveRoutinePrescription() {
-        if (!currentEditingRoutineObj) return;
-        await portalDB.put('fichas', currentEditingRoutineObj);
-        await refreshPortalUI();
-        showToast("Ficha de treino prescrita e guardada com sucesso!");
-    }
+        async function setupInitialDataIfEmpty() {
+            const alunos = await portalDB.getAll('alunos');
+            if (alunos.length === 0) {
+                await portalDB.put('alunos', {
+                    id: 'student_1',
+                    name: 'João Silva',
+                    streak: 12,
+                    xp: 450,
+                    level: 2,
+                    completedWorkoutsMonth: 14
+                });
 
-    /* =============================================================
-       8. GUARDA DE NOTAS E NOVOS ALUNOS
-       ============================================================= */
-    async function saveQuickNote() {
-        const text = document.getElementById('quick-trainer-note').value;
-        await portalDB.put('notas', { studentId: activeStudentId, text });
-        document.getElementById('full-trainer-notes').value = text;
-        showToast("Nota do treinador atualizada!");
-    }
+                await portalDB.put('alunos', {
+                    id: 'student_2',
+                    name: 'Ana Pereira',
+                    streak: 5,
+                    xp: 200,
+                    level: 1,
+                    completedWorkoutsMonth: 8
+                });
 
-    async function saveFullNotes() {
-        const text = document.getElementById('full-trainer-notes').value;
-        await portalDB.put('notas', { studentId: activeStudentId, text });
-        document.getElementById('quick-trainer-note').value = text;
-        showToast("Anotações do aluno guardadas!");
-    }
+                const today = new Date().toISOString().split('T')[0];
 
-    async function handleAddNewStudent(e) {
-        e.preventDefault();
-        const name = document.getElementById('new-student-name').value.trim();
-        const weight = parseFloat(document.getElementById('new-student-weight').value);
-        const fat = parseFloat(document.getElementById('new-student-fat').value) || null;
+                await portalDB.add('medidas', { studentId: 'student_1', date: '2026-10-01', weight: 81.0, fat: 18.0, arm: 37, waist: 84, chest: 100 });
+                await portalDB.add('medidas', { studentId: 'student_1', date: '2026-10-15', weight: 79.5, fat: 17.2, arm: 37.5, waist: 82.5, chest: 101 });
+                await portalDB.add('medidas', { studentId: 'student_1', date: today, weight: 78.8, fat: 16.5, arm: 38, waist: 81, chest: 102 });
 
-        if (!name || isNaN(weight)) return;
+                await portalDB.add('forca', { studentId: 'student_1', exercise: 'Supino Reto com Barra', date: '2026-10-01', load: 60 });
+                await portalDB.add('forca', { studentId: 'student_1', exercise: 'Supino Reto com Barra', date: '2026-10-15', load: 70 });
+                await portalDB.add('forca', { studentId: 'student_1', exercise: 'Supino Reto com Barra', date: today, load: 75 });
 
-        const newId = `student_${Date.now()}`;
-        await portalDB.put('alunos', {
-            id: newId,
-            name: name,
-            streak: 1,
-            xp: 100,
-            level: 1,
-            completedWorkoutsMonth: 0
-        });
+                await portalDB.put('fichas', {
+                    key: 'student_1_A',
+                    studentId: 'student_1',
+                    routineCode: 'A',
+                    title: "Treino A - Peito & Tríceps",
+                    exercises: [
+                        { name: "Supino Reto com Barra", sets: [{kg: 75, reps: 8, done: true}, {kg: 75, reps: 8, done: true}, {kg: 75, reps: 6, done: true}] },
+                        { name: "Supino Inclinado c/ Halteres", sets: [{kg: 24, reps: 10, done: true}, {kg: 24, reps: 10, done: true}] },
+                        { name: "Tríceps na Polia Alta", sets: [{kg: 35, reps: 12, done: true}, {kg: 35, reps: 12, done: true}] }
+                    ]
+                });
 
-        const today = new Date().toISOString().split('T')[0];
-        await portalDB.add('medidas', { studentId: newId, date: today, weight, fat });
+                await portalDB.put('fichas', {
+                    key: 'student_1_B',
+                    studentId: 'student_1',
+                    routineCode: 'B',
+                    title: "Treino B - Costas & Bíceps",
+                    exercises: [
+                        { name: "Puxada à Frente na Polia", sets: [{kg: 50, reps: 10, done: false}, {kg: 55, reps: 8, done: false}] },
+                        { name: "Remada Curvada com Barra", sets: [{kg: 40, reps: 10, done: false}, {kg: 45, reps: 10, done: false}] }
+                    ]
+                });
 
-        closeModal('add-student-modal');
-        await populateStudentDropdowns();
-        await changeStudent(newId);
-        showToast(`Perfil de ${name} criado com sucesso!`);
-    }
+                await portalDB.put('nutricao', {
+                    key: `student_1_${today}`,
+                    studentId: 'student_1',
+                    date: today,
+                    water: 2.5,
+                    cals: 2150,
+                    prot: 165,
+                    carbs: 210,
+                    fat: 55
+                });
 
-    async function handleMetricSubmit(e) {
-        e.preventDefault();
-        const date = document.getElementById('input-metric-date').value;
-        const weight = parseFloat(document.getElementById('input-metric-weight').value);
-        const fat = parseFloat(document.getElementById('input-metric-fat').value) || null;
-        const arm = parseFloat(document.getElementById('input-metric-arm').value) || null;
-        const waist = parseFloat(document.getElementById('input-metric-waist').value) || null;
-        const chest = parseFloat(document.getElementById('input-metric-chest').value) || null;
+                await portalDB.put('notas', {
+                    studentId: 'student_1',
+                    text: 'Excelente evolução técnica no supino. Focar na estabilização dos ombros no supino inclinado.'
+                });
+            }
+        }
 
-        await portalDB.add('medidas', { studentId: activeStudentId, date, weight, fat, arm, waist, chest });
+        /* =============================================================
+           3. SINCRONIZAÇÃO E ATUALIZAÇÃO DA INTERFACE
+           ============================================================= */
+        function getInitials(name) {
+            if (!name) return '--';
+            const parts = name.trim().split(' ');
+            if (parts.length >= 2) return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+            return parts[0].substring(0, 2).toUpperCase();
+        }
 
-        closeModal('add-metric-modal');
-        await refreshPortalUI();
-        showToast("Medida registada no Portal DB!");
-    }
+        async function populateStudentDropdowns() {
+            const alunos = await portalDB.getAll('alunos');
+            const sideSelect = document.getElementById('sidebar-student-select');
+            const mobSelect = document.getElementById('mobile-student-select');
 
-    /* =============================================================
-       9. PROCESSAMENTO E IMPORTAÇÃO JSON
-       ============================================================= */
-    function handleJSONImport(event) {
-        const file = event.target.files[0];
-        if (!file) return;
+            sideSelect.innerHTML = '';
+            mobSelect.innerHTML = '';
 
-        const reader = new FileReader();
-        reader.onload = async function(e) {
+            alunos.forEach(a => {
+                const opt1 = document.createElement('option');
+                opt1.value = a.id;
+                opt1.innerText = a.name;
+                if (a.id === activeStudentId) opt1.selected = true;
+                sideSelect.appendChild(opt1);
+
+                const opt2 = document.createElement('option');
+                opt2.value = a.id;
+                opt2.innerText = a.name;
+                if (a.id === activeStudentId) opt2.selected = true;
+                mobSelect.appendChild(opt2);
+            });
+        }
+
+        async function changeStudent(studentId) {
+            activeStudentId = studentId;
+            document.getElementById('sidebar-student-select').value = studentId;
+            document.getElementById('mobile-student-select').value = studentId;
+
+            await refreshPortalUI();
+        }
+
+        async function refreshPortalUI() {
+            const student = await portalDB.get('alunos', activeStudentId);
+            if (!student) return;
+
+            document.getElementById('student-name-display').innerText = student.name;
+            document.getElementById('student-avatar-large').innerText = getInitials(student.name);
+            document.getElementById('student-level-badge').innerText = `Nível ${student.level || 1}`;
+            document.getElementById('student-streak-display').innerText = student.streak || 0;
+            document.getElementById('student-xp-display').innerText = student.xp || 0;
+            document.getElementById('student-workouts-display').innerText = student.completedWorkoutsMonth || 0;
+
+            const medidas = await portalDB.getByIndex('medidas', 'studentId', activeStudentId);
+            medidas.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            if (medidas.length > 0) {
+                const last = medidas[medidas.length - 1];
+                document.getElementById('dash-weight').innerText = last.weight;
+                document.getElementById('dash-fat').innerText = last.fat || '--';
+            } else {
+                document.getElementById('dash-weight').innerText = '--';
+                document.getElementById('dash-fat').innerText = '--';
+            }
+
+            const today = new Date().toISOString().split('T')[0];
+            const nutricao = await portalDB.get('nutricao', `${activeStudentId}_${today}`) || { water: 0, cals: 0, prot: 0, carbs: 0, fat: 0 };
+
+            document.getElementById('dash-cals').innerText = nutricao.cals;
+            document.getElementById('dash-water').innerText = nutricao.water.toFixed(1);
+
+            document.getElementById('pt-cals-ingested').innerText = nutricao.cals;
+            document.getElementById('pt-cals-bar').style.width = `${Math.min(100, (nutricao.cals / 2400) * 100)}%`;
+            document.getElementById('pt-prot-ingested').innerText = nutricao.prot;
+            document.getElementById('pt-prot-bar').style.width = `${Math.min(100, (nutricao.prot / 180) * 100)}%`;
+            document.getElementById('pt-carbs-ingested').innerText = nutricao.carbs;
+            document.getElementById('pt-carbs-bar').style.width = `${Math.min(100, (nutricao.carbs / 270) * 100)}%`;
+            document.getElementById('pt-fat-ingested').innerText = nutricao.fat;
+            document.getElementById('pt-fat-bar').style.width = `${Math.min(100, (nutricao.fat / 65) * 100)}%`;
+
+            document.getElementById('pt-water-val').innerText = nutricao.water.toFixed(1);
+            document.getElementById('pt-water-cups').innerText = Math.round(nutricao.water / 0.25);
+
+            const nota = await portalDB.get('notas', activeStudentId);
+            const notaText = nota ? nota.text : '';
+            document.getElementById('quick-trainer-note').value = notaText;
+            document.getElementById('full-trainer-notes').value = notaText;
+
+            await renderDashboardRoutineSummary();
+            await renderStudentBadges(student);
+            renderMetricsTable(medidas);
+            await renderPTRoutine(currentPTRoutineTab);
+            await loadPrescriptionRoutine(document.getElementById('prescribe-routine-select').value);
+            renderCharts();
+        }
+
+        /* =============================================================
+           4. COMPONENTES DO DASHBOARD
+           ============================================================= */
+        async function renderDashboardRoutineSummary() {
+            const container = document.getElementById('dash-routine-summary');
+            container.innerHTML = '';
+
+            const ficha = await portalDB.get('fichas', `${activeStudentId}_A`);
+            if (!ficha || !ficha.exercises) {
+                container.innerHTML = `<p class="text-xs text-slate-500 py-2">Sem ficha ativa configurada para o aluno.</p>`;
+                return;
+            }
+
+            ficha.exercises.slice(0, 3).forEach((ex, idx) => {
+                const completedSets = ex.sets ? ex.sets.filter(s => s.done).length : 0;
+                const totalSets = ex.sets ? ex.sets.length : 0;
+
+                const item = document.createElement('div');
+                item.className = "flex items-center justify-between p-3 bg-slate-800/60 rounded-xl border border-slate-700/50";
+                item.innerHTML = `
+                    <div class="flex items-center space-x-3">
+                        <div class="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-xs font-bold text-brand-400">${idx + 1}</div>
+                        <div>
+                            <p class="text-sm font-semibold text-white">${ex.name}</p>
+                            <p class="text-xs text-slate-400">${totalSets} séries agendadas</p>
+                        </div>
+                    </div>
+                    <span class="text-xs ${completedSets === totalSets && totalSets > 0 ? 'text-brand-400' : 'text-slate-400'} font-semibold">
+                        ${completedSets}/${totalSets} concluídas
+                    </span>
+                `;
+                container.appendChild(item);
+            });
+        }
+
+        async function renderStudentBadges(student) {
+            const container = document.getElementById('dash-badges-grid');
+            container.innerHTML = '';
+
+            const badges = [
+                { title: "Atleta Oficial", icon: "fa-user-check", active: true },
+                { title: "Consistente", icon: "fa-dumbbell", active: (student.completedWorkoutsMonth || 0) >= 8 },
+                { title: "Em Fogo", icon: "fa-fire", active: (student.streak || 0) >= 5 },
+                { title: "Hidratação OK", icon: "fa-glass-water", active: true },
+                { title: "Nível Avançado", icon: "fa-trophy", active: (student.level || 1) >= 2 }
+            ];
+
+            badges.forEach(b => {
+                const card = document.createElement('div');
+                card.className = `p-3 rounded-xl border text-center ${b.active ? 'bg-slate-800/80 border-brand-500/40 text-brand-400' : 'bg-slate-900/40 border-dark-border text-slate-600'}`;
+                card.innerHTML = `
+                    <i class="fa-solid ${b.icon} text-lg mb-1"></i>
+                    <p class="text-[10px] font-bold truncate">${b.title}</p>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        /* =============================================================
+           5. GRÁFICOS CHART.JS
+           ============================================================= */
+        async function renderCharts() {
+            const medidas = await portalDB.getByIndex('medidas', 'studentId', activeStudentId);
+            medidas.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            const ctxWeight = document.getElementById('ptWeightChart').getContext('2d');
+            if (weightChartInstance) weightChartInstance.destroy();
+
+            weightChartInstance = new Chart(ctxWeight, {
+                type: 'line',
+                data: {
+                    labels: medidas.map(m => m.date),
+                    datasets: [{
+                        label: 'Peso (kg)',
+                        data: medidas.map(m => m.weight),
+                        borderColor: '#ccff00',
+                        backgroundColor: 'rgba(204, 255, 0, 0.1)',
+                        borderWidth: 3,
+                        fill: true,
+                        tension: 0.3,
+                        pointBackgroundColor: '#ccff00',
+                        pointRadius: 5
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { color: '#2a2a2a' }, ticks: { color: '#94a3b8' } },
+                        y: { grid: { color: '#2a2a2a' }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+
+            const selectedEx = document.getElementById('pt-exercise-chart-select').value;
+            const forcaData = await portalDB.getByIndex('forca', 'studentId', activeStudentId);
+            const filtered = forcaData.filter(f => f.exercise === selectedEx);
+            filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+
+            const ctxStrength = document.getElementById('ptStrengthChart').getContext('2d');
+            if (strengthChartInstance) strengthChartInstance.destroy();
+
+            strengthChartInstance = new Chart(ctxStrength, {
+                type: 'bar',
+                data: {
+                    labels: filtered.map(d => d.date),
+                    datasets: [{
+                        label: 'Carga (kg)',
+                        data: filtered.map(d => d.load),
+                        backgroundColor: '#00f0ff',
+                        borderRadius: 8
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
+                        y: { grid: { color: '#2a2a2a' }, ticks: { color: '#94a3b8' } }
+                    }
+                }
+            });
+        }
+
+        function renderMetricsTable(medidas) {
+            const tbody = document.getElementById('pt-metrics-table-body');
+            tbody.innerHTML = '';
+            const sorted = [...medidas].reverse();
+            sorted.forEach(m => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td class="p-3 font-medium text-white">${m.date}</td>
+                    <td class="p-3 text-brand-400 font-bold">${m.weight} kg</td>
+                    <td class="p-3">${m.fat || '-'}%</td>
+                    <td class="p-3">${m.arm || '-'} cm</td>
+                    <td class="p-3">${m.waist || '-'} cm</td>
+                    <td class="p-3">${m.chest || '-'} cm</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        /* =============================================================
+           6. CONSULTA DE FICHA DE TREINOS
+           ============================================================= */
+        async function selectRoutineTab(code) {
+            currentPTRoutineTab = code;
+            document.querySelectorAll('.pt-routine-tab-btn').forEach(btn => {
+                btn.classList.remove('bg-brand-500', 'text-black');
+                btn.classList.add('text-slate-400');
+            });
+            const activeBtn = document.getElementById(`btn-pt-routine-${code}`);
+            activeBtn.classList.add('bg-brand-500', 'text-black');
+            activeBtn.classList.remove('text-slate-400');
+
+            await renderPTRoutine(code);
+        }
+
+        async function renderPTRoutine(code) {
+            const ficha = await portalDB.get('fichas', `${activeStudentId}_${code}`);
+            const container = document.getElementById('pt-workout-routine-container');
+            container.innerHTML = '';
+
+            if (!ficha || !ficha.exercises || ficha.exercises.length === 0) {
+                container.innerHTML = `<p class="text-xs text-slate-500 py-4">Sem exercícios prescritos para a Ficha ${code}.</p>`;
+                return;
+            }
+
+            ficha.exercises.forEach((ex, exIndex) => {
+                const card = document.createElement('div');
+                card.className = "bg-dark-card p-5 rounded-2xl border border-dark-border space-y-3";
+
+                let setsHTML = '';
+                ex.sets.forEach((s, sIdx) => {
+                    setsHTML += `
+                        <div class="flex items-center justify-between bg-slate-800/50 p-2.5 rounded-xl border border-slate-700/40 text-xs">
+                            <span class="font-bold text-slate-400">Série #${sIdx + 1}</span>
+                            <span class="text-white font-semibold">${s.kg} kg</span>
+                            <span class="text-slate-300">${s.reps} reps</span>
+                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.done ? 'bg-brand-500/20 text-brand-400' : 'bg-slate-700 text-slate-400'}">
+                                ${s.done ? 'Concluída' : 'Pendente'}
+                            </span>
+                        </div>
+                    `;
+                });
+
+                card.innerHTML = `
+                    <div class="flex justify-between items-center">
+                        <h4 class="font-bold text-white text-sm">${ex.name}</h4>
+                        <span class="text-xs text-brand-accent font-medium">${ex.sets.length} séries</span>
+                    </div>
+                    <div class="space-y-2">
+                        ${setsHTML}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+        }
+
+        /* =============================================================
+           7. PRESCRIÇÃO E EDIÇÃO DE TREINO
+           ============================================================= */
+        let currentEditingRoutineObj = null;
+
+        async function loadPrescriptionRoutine(code) {
+            let ficha = await portalDB.get('fichas', `${activeStudentId}_${code}`);
+            if (!ficha) {
+                ficha = {
+                    key: `${activeStudentId}_${code}`,
+                    studentId: activeStudentId,
+                    routineCode: code,
+                    title: `Treino ${code}`,
+                    exercises: []
+                };
+            }
+            currentEditingRoutineObj = ficha;
+
+            const list = document.getElementById('prescription-exercises-list');
+            list.innerHTML = '';
+
+            if (ficha.exercises.length === 0) {
+                list.innerHTML = `<p class="text-xs text-slate-500 py-2">Ficha vazia. Clique em 'Adicionar Exercício' para prescrever.</p>`;
+                return;
+            }
+
+            ficha.exercises.forEach((ex, exIndex) => {
+                const item = document.createElement('div');
+                item.className = "p-4 bg-slate-800/60 rounded-xl border border-slate-700/50 space-y-3";
+                item.innerHTML = `
+                    <div class="flex justify-between items-center gap-2">
+                        <input type="text" value="${ex.name}" onchange="updatePrescriptionExName(${exIndex}, this.value)" placeholder="Nome do Exercício" class="bg-slate-700 text-xs font-bold text-white p-2 rounded-lg outline-none focus:border-brand-500 w-full border border-slate-600">
+                        <button onclick="removeExerciseFromPrescription(${exIndex})" class="p-2 text-rose-400 hover:bg-rose-500/10 rounded-lg transition">
+                            <i class="fa-solid fa-trash"></i>
+                        </button>
+                    </div>
+
+                    <div class="flex items-center space-x-2 text-xs">
+                        <span class="text-slate-400">N.º Séries:</span>
+                        <input type="number" value="${ex.sets.length}" onchange="updatePrescriptionExSetsCount(${exIndex}, this.value)" class="w-16 bg-slate-700 text-white p-1 rounded text-center outline-none border border-slate-600">
+                        <span class="text-slate-400">Carga Base (kg):</span>
+                        <input type="number" value="${ex.sets[0] ? ex.sets[0].kg : 0}" onchange="updatePrescriptionExDefaultKg(${exIndex}, this.value)" class="w-16 bg-slate-700 text-white p-1 rounded text-center outline-none border border-slate-600">
+                    </div>
+                `;
+                list.appendChild(item);
+            });
+        }
+
+        function updatePrescriptionExName(exIndex, name) {
+            currentEditingRoutineObj.exercises[exIndex].name = name;
+        }
+
+        function updatePrescriptionExDefaultKg(exIndex, kg) {
+            const num = parseFloat(kg) || 0;
+            currentEditingRoutineObj.exercises[exIndex].sets.forEach(s => s.kg = num);
+        }
+
+        function updatePrescriptionExSetsCount(exIndex, count) {
+            const target = parseInt(count) || 1;
+            const currentSets = currentEditingRoutineObj.exercises[exIndex].sets;
+            const baseKg = currentSets[0] ? currentSets[0].kg : 0;
+
+            if (target > currentSets.length) {
+                while (currentSets.length < target) {
+                    currentSets.push({ kg: baseKg, reps: 10, done: false });
+                }
+            } else if (target < currentSets.length && target > 0) {
+                currentSets.splice(target);
+            }
+        }
+
+        function addExerciseToPrescription() {
+            if (!currentEditingRoutineObj) return;
+            currentEditingRoutineObj.exercises.push({
+                name: "Novo Exercício Prescrito",
+                sets: [{ kg: 20, reps: 10, done: false }, { kg: 20, reps: 10, done: false }]
+            });
+            loadPrescriptionRoutine(currentEditingRoutineObj.routineCode);
+        }
+
+        function removeExerciseFromPrescription(index) {
+            currentEditingRoutineObj.exercises.splice(index, 1);
+            loadPrescriptionRoutine(currentEditingRoutineObj.routineCode);
+        }
+
+        async function saveRoutinePrescription() {
+            if (!currentEditingRoutineObj) return;
+            await portalDB.put('fichas', currentEditingRoutineObj);
+            await refreshPortalUI();
+            showToast("Ficha de treino guardada com sucesso!");
+        }
+
+        /* =============================================================
+           8. GUARDA DE NOTAS E CRIAR NOVO ALUNO
+           ============================================================= */
+        async function saveQuickNote() {
+            const text = document.getElementById('quick-trainer-note').value;
+            await portalDB.put('notas', { studentId: activeStudentId, text });
+            document.getElementById('full-trainer-notes').value = text;
+            showToast("Anotação guardada com sucesso!");
+        }
+
+        async function saveFullNotes() {
+            const text = document.getElementById('full-trainer-notes').value;
+            await portalDB.put('notas', { studentId: activeStudentId, text });
+            document.getElementById('quick-trainer-note').value = text;
+            showToast("Prontuário técnico atualizado!");
+        }
+
+        async function handleAddNewStudent(e) {
+            e.preventDefault();
+            const name = document.getElementById('new-student-name').value.trim();
+            const weight = parseFloat(document.getElementById('new-student-weight').value);
+            const fat = parseFloat(document.getElementById('new-student-fat').value) || null;
+
+            if (!name || isNaN(weight)) return;
+
+            const newId = `student_${Date.now()}`;
+            await portalDB.put('alunos', {
+                id: newId,
+                name: name,
+                streak: 1,
+                xp: 100,
+                level: 1,
+                completedWorkoutsMonth: 0
+            });
+
+            const today = new Date().toISOString().split('T')[0];
+            await portalDB.add('medidas', { studentId: newId, date: today, weight, fat });
+
+            closeModal('add-student-modal');
+            await populateStudentDropdowns();
+            await changeStudent(newId);
+            showToast(`Perfil do aluno ${name} criado!`);
+        }
+
+        async function handleMetricSubmit(e) {
+            e.preventDefault();
+            const date = document.getElementById('input-metric-date').value;
+            const weight = parseFloat(document.getElementById('input-metric-weight').value);
+            const fat = parseFloat(document.getElementById('input-metric-fat').value) || null;
+            const arm = parseFloat(document.getElementById('input-metric-arm').value) || null;
+            const waist = parseFloat(document.getElementById('input-metric-waist').value) || null;
+            const chest = parseFloat(document.getElementById('input-metric-chest').value) || null;
+
+            await portalDB.add('medidas', { studentId: activeStudentId, date, weight, fat, arm, waist, chest });
+
+            closeModal('add-metric-modal');
+            await refreshPortalUI();
+            showToast("Nova medida registada!");
+        }
+
+        /* =============================================================
+           9. PROCESSAMENTO DE IMPORTAÇÃO JSON DO ATLETA (PM STUDIO)
+           ============================================================= */
+        function handleJSONImport(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = async function(e) {
+                try {
+                    const data = JSON.parse(e.target.result);
+                    await processImportedData(data);
+                } catch (err) {
+                    showToast("⚠️ Ficheiro JSON inválido!");
+                }
+            };
+            reader.readAsText(file);
+        }
+
+        async function handlePastedJSONImport() {
+            const text = document.getElementById('json-paste-area').value;
+            if (!text.trim()) return;
             try {
-                const data = JSON.parse(e.target.result);
+                const data = JSON.parse(text);
                 await processImportedData(data);
             } catch (err) {
-                showToast("⚠️ Ficheiro JSON inválido!");
+                showToast("⚠️ Formato JSON inválido!");
+            }
+        }
+
+        async function processImportedData(data) {
+            // Suporta formatos diretos de perfil ou coleções do FitPulseDB/PM Studio
+            const profileObj = data.perfil || data.profile || (data.name ? data : null);
+
+            if (!profileObj || (!profileObj.name && !data.name)) {
+                showToast("⚠️ JSON não contém um perfil válido de aluno.");
+                return;
+            }
+
+            const targetStudentId = `student_${Date.now()}`;
+            const studentName = profileObj.name || data.name || "Aluno Importado";
+            
+            await portalDB.put('alunos', {
+                id: targetStudentId,
+                name: studentName,
+                streak: profileObj.streak || 0,
+                xp: profileObj.xp || 0,
+                level: profileObj.level || 1,
+                completedWorkoutsMonth: profileObj.completedWorkoutsMonth || 0
+            });
+
+            // Medidas / Peso
+            const pesoArray = data.peso || data.weights || [];
+            if (Array.isArray(pesoArray)) {
+                for (const p of pesoArray) {
+                    await portalDB.add('medidas', {
+                        studentId: targetStudentId,
+                        date: p.date || new Date().toISOString().split('T')[0],
+                        weight: parseFloat(p.weight) || 0,
+                        fat: p.fat ? parseFloat(p.fat) : null,
+                        arm: p.arm ? parseFloat(p.arm) : null,
+                        waist: p.waist ? parseFloat(p.waist) : null,
+                        chest: p.chest ? parseFloat(p.chest) : null
+                    });
+                }
+            }
+
+            // Força / Cargas
+            const forcaArray = data.forca || data.strength || [];
+            if (Array.isArray(forcaArray)) {
+                for (const f of forcaArray) {
+                    await portalDB.add('forca', {
+                        studentId: targetStudentId,
+                        exercise: f.exercise,
+                        date: f.date,
+                        load: parseFloat(f.load)
+                    });
+                }
+            }
+
+            // Fichas
+            const treinosArray = data.treinos || data.workouts || [];
+            if (Array.isArray(treinosArray)) {
+                for (const t of treinosArray) {
+                    await portalDB.put('fichas', {
+                        key: `${targetStudentId}_${t.routineCode || 'A'}`,
+                        studentId: targetStudentId,
+                        routineCode: t.routineCode || 'A',
+                        title: t.title || "Treino Prescrito",
+                        exercises: t.exercises || []
+                    });
+                }
+            }
+
+            closeModal('sync-modal');
+            await populateStudentDropdowns();
+            await changeStudent(targetStudentId);
+            showToast(`Dados do aluno ${studentName} importados com sucesso!`);
+        }
+
+        /* =============================================================
+           10. UTILITÁRIOS DE NAVEGAÇÃO E MODAIS
+           ============================================================= */
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.nav-btn, .mobile-nav-btn').forEach(btn => {
+                if (btn.getAttribute('data-tab') === tabId) {
+                    btn.classList.add('text-brand-400', 'font-bold');
+                } else {
+                    btn.classList.remove('text-brand-400', 'font-bold');
+                }
+            });
+
+            const selectedTab = document.getElementById(`tab-${tabId}`);
+            if (selectedTab) selectedTab.classList.add('active');
+
+            if (tabId === 'metrics') renderCharts();
+            if (tabId === 'workouts') renderPTRoutine(currentPTRoutineTab);
+        }
+
+        function openModal(id) {
+            document.getElementById(id).classList.remove('hidden');
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast-notification');
+            document.getElementById('toast-message').innerText = msg;
+            toast.classList.remove('translate-y-32');
+            setTimeout(() => {
+                toast.classList.add('translate-y-32');
+            }, 3000);
+        }
+
+        /* =============================================================
+           11. INICIALIZAÇÃO DA APLICAÇÃO
+           ============================================================= */
+        window.onload = async function() {
+            try {
+                await portalDB.init();
+                await setupInitialDataIfEmpty();
+
+                document.getElementById('input-metric-date').value = new Date().toISOString().split('T')[0];
+
+                await populateStudentDropdowns();
+                await refreshPortalUI();
+            } catch (err) {
+                console.error("Erro na inicialização do Portal:", err);
             }
         };
-        reader.readAsText(file);
-    }
-
-    async function handlePastedJSONImport() {
-        const text = document.getElementById('json-paste-area').value;
-        if (!text.trim()) return;
-        try {
-            const data = JSON.parse(text);
-            await processImportedData(data);
-        } catch (err) {
-            showToast("⚠️ Estrutura JSON inválida!");
-        }
-    }
-
-    async function processImportedData(data) {
-        if (!data.perfil || !data.perfil.name) {
-            showToast("⚠️ JSON não contém perfil válido do aluno.");
-            return;
-        }
-
-        const targetStudentId = `student_${Date.now()}`;
-        
-        // Perfil
-        await portalDB.put('alunos', {
-            id: targetStudentId,
-            name: data.perfil.name,
-            streak: data.perfil.streak || 0,
-            xp: data.perfil.xp || 0,
-            level: data.perfil.level || 1,
-            completedWorkoutsMonth: data.perfil.completedWorkoutsMonth || 0
-        });
-
-        // Medidas
-        if (Array.isArray(data.peso)) {
-            for (const p of data.peso) {
-                await portalDB.add('medidas', {
-                    studentId: targetStudentId,
-                    date: p.date,
-                    weight: p.weight,
-                    fat: p.fat,
-                    arm: p.arm,
-                    waist: p.waist,
-                    chest: p.chest
-                });
-            }
-        }
-
-        // Força
-        if (Array.isArray(data.forca)) {
-            for (const f of data.forca) {
-                await portalDB.add('forca', {
-                    studentId: targetStudentId,
-                    exercise: f.exercise,
-                    date: f.date,
-                    load: f.load
-                });
-            }
-        }
-
-        // Fichas
-        if (Array.isArray(data.treinos)) {
-            for (const t of data.treinos) {
-                await portalDB.put('fichas', {
-                    key: `${targetStudentId}_${t.routineCode}`,
-                    studentId: targetStudentId,
-                    routineCode: t.routineCode,
-                    title: t.title,
-                    exercises: t.exercises
-                });
-            }
-        }
-
-        closeModal('sync-modal');
-        await populateStudentDropdowns();
-        await changeStudent(targetStudentId);
-        showToast(`Dados de ${data.perfil.name} importados com sucesso!`);
-    }
-
-    /* =============================================================
-       10. UTILITÁRIOS DE MODAIS E NAVEGAÇÃO
-       ============================================================= */
-    function switchTab(tabId) {
-        document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-        document.querySelectorAll('.nav-btn, .mobile-nav-btn').forEach(btn => {
-            if (btn.getAttribute('data-tab') === tabId) {
-                btn.classList.add('text-brand-400', 'font-bold');
-            } else {
-                btn.classList.remove('text-brand-400', 'font-bold');
-            }
-        });
-
-        const selectedTab = document.getElementById(`tab-${tabId}`);
-        if (selectedTab) selectedTab.classList.add('active');
-
-        if (tabId === 'metrics') renderCharts();
-        if (tabId === 'workouts') renderPTRoutine(currentPTRoutineTab);
-    }
-
-    function openModal(id) {
-        document.getElementById(id).classList.remove('hidden');
-    }
-
-    function closeModal(id) {
-        document.getElementById(id).classList.add('hidden');
-    }
-
-    function showToast(msg) {
-        const toast = document.getElementById('toast-notification');
-        document.getElementById('toast-message').innerText = msg;
-        toast.classList.remove('translate-y-32');
-        setTimeout(() => {
-            toast.classList.add('translate-y-32');
-        }, 3000);
-    }
-
-    /* =============================================================
-       11. INICIALIZAÇÃO DO PORTAL
-       ============================================================= */
-    window.onload = async function() {
-        try {
-            await portalDB.init();
-            await setupInitialDataIfEmpty();
-
-            document.getElementById('input-metric-date').value = new Date().toISOString().split('T')[0];
-
-            await populateStudentDropdowns();
-            await refreshPortalUI();
-        } catch (err) {
-            console.error("Erro na inicialização do Portal:", err);
-        }
-    };
-</script>
+    </script>
+</body>
+</html>
