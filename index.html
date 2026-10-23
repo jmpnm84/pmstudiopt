@@ -148,11 +148,11 @@
                     <p class="text-xs text-brand-accent flex items-center gap-1">
                         <i class="fa-solid fa-circle text-[8px] text-emerald-400"></i> Portal Ativo
                     </p>
-                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">v0.1.2</p>
+                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">v0.1.3</p>
                 </div>
             </div>
-            <button onclick="openModal('sync-modal')" title="Importar JSON do Atleta" class="p-2 bg-slate-800 hover:bg-slate-700 text-brand-400 rounded-xl transition border border-dark-border">
-                <i class="fa-solid fa-file-import"></i>
+            <button onclick="openSyncModal()" title="Importar do Google Drive" class="p-2 bg-slate-800 hover:bg-slate-700 text-brand-400 rounded-xl transition border border-dark-border">
+                <i class="fa-solid fa-cloud-arrow-down"></i>
             </button>
         </div>
     </aside>
@@ -165,8 +165,8 @@
                 <span class="font-bold text-lg tracking-wider text-white">PM <span class="text-brand-500">PRO</span></span>
             </div>
             <div class="flex items-center space-x-2">
-                <button onclick="openModal('sync-modal')" class="px-2.5 py-1.5 bg-slate-800 text-brand-400 border border-dark-border rounded-lg text-xs font-semibold flex items-center gap-1.5">
-                    <i class="fa-solid fa-file-import"></i> JSON
+                <button onclick="openSyncModal()" class="px-2.5 py-1.5 bg-slate-800 text-brand-400 border border-dark-border rounded-lg text-xs font-semibold flex items-center gap-1.5">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> Drive
                 </button>
                 <div id="mobile-avatar" class="w-8 h-8 rounded-full bg-brand-500/20 flex items-center justify-center font-bold text-xs text-brand-500 border border-brand-500/30">
                     PT
@@ -174,7 +174,6 @@
             </div>
         </div>
 
-        <!-- Seletor de Atleta Mobile -->
         <div>
             <select id="mobile-student-select" onchange="changeStudent(this.value)" class="w-full bg-slate-800 text-xs text-white border border-dark-border rounded-xl p-2.5 outline-none focus:border-brand-500 font-semibold">
                 <!-- Preenchido via JS -->
@@ -207,21 +206,17 @@
             </div>
 
             <div class="flex items-center gap-2 w-full md:w-auto justify-end flex-wrap">
-                <button onclick="openModal('add-student-modal')" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-dark-border transition flex items-center gap-2">
-                    <i class="fa-solid fa-user-plus text-brand-500"></i> Novo Atleta
+                <button onclick="syncActiveStudentToGoogleDrive()" class="px-4 py-2.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-xl transition flex items-center gap-2 shadow-lg" title="Sincronizar alterações de volta para o Google Drive">
+                    <i class="fa-solid fa-cloud-arrow-up"></i> Sincronizar Drive
                 </button>
-                <button onclick="deleteActiveStudent()" class="px-3 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold rounded-xl border border-rose-500/30 transition flex items-center gap-1.5" title="Eliminar Atleta Ativo">
-                    <i class="fa-solid fa-trash-can"></i> Eliminar
-                </button>
-                <button onclick="openModal('sync-modal')" class="px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-black text-xs font-extrabold rounded-xl transition neon-glow flex items-center gap-2">
-                    <i class="fa-solid fa-file-import"></i> Importar Dados JSON
+                <button onclick="openSyncModal()" class="px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-black text-xs font-extrabold rounded-xl transition neon-glow flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-arrow-down"></i> Importar do Drive
                 </button>
             </div>
         </div>
 
-        <!-- 1. DASHBOARD / VISÃO GERAL DO ATLETA -->
+        <!-- 1. DASHBOARD -->
         <section id="tab-dashboard" class="tab-content active space-y-6">
-            <!-- Métricas Rápidas do Atleta -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-dark-card p-4 rounded-2xl border border-dark-border">
                     <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
@@ -229,7 +224,7 @@
                         <i class="fa-solid fa-weight-scale text-brand-400"></i>
                     </div>
                     <div class="text-2xl font-bold text-white"><span id="dash-weight">--</span> <span class="text-xs text-slate-400 font-normal">kg</span></div>
-                    <span id="dash-weight-diff" class="text-xs text-emerald-400 flex items-center gap-1 mt-1"><i class="fa-solid fa-arrow-trend-down"></i> Acompanhamento Ativo</span>
+                    <span class="text-xs text-emerald-400 flex items-center gap-1 mt-1"><i class="fa-solid fa-arrow-trend-down"></i> Acompanhamento Ativo</span>
                 </div>
 
                 <div class="bg-dark-card p-4 rounded-2xl border border-dark-border">
@@ -260,9 +255,7 @@
                 </div>
             </div>
 
-            <!-- Resumo de Treino e Observações do Personal -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Estado do Treino Ativo -->
                 <div class="lg:col-span-2 bg-dark-card p-6 rounded-2xl border border-dark-border space-y-4">
                     <div class="flex justify-between items-center">
                         <h3 class="font-bold text-lg text-white flex items-center gap-2">
@@ -280,7 +273,6 @@
                     </button>
                 </div>
 
-                <!-- Painel Rápido de Observações -->
                 <div class="bg-dark-card p-6 rounded-2xl border border-dark-border flex flex-col justify-between">
                     <div>
                         <h3 class="font-bold text-lg text-white mb-3 flex items-center gap-2">
@@ -293,16 +285,6 @@
                     </button>
                 </div>
             </div>
-
-            <!-- Badges e Conquistas do Atleta -->
-            <div class="bg-dark-card p-6 rounded-2xl border border-dark-border">
-                <h3 class="font-bold text-lg text-white mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-trophy text-amber-400"></i> Desafios & Conquistas Desbloqueadas
-                </h3>
-                <div id="dash-badges-grid" class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-5 gap-3">
-                    <!-- Inserido dinamicamente via JS -->
-                </div>
-            </div>
         </section>
 
         <!-- 2. MÉTRICAS E EVOLUÇÃO -->
@@ -310,29 +292,25 @@
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
                     <h2 class="text-2xl font-bold text-white">Evolução Físico-Corporal do Atleta</h2>
-                    <p class="text-slate-400 text-sm">Acompanhe a progressão de peso, medidas antropométricas e cargas de trabalho.</p>
+                    <p class="text-slate-400 text-sm">Acompanhe a progressão de peso, medidas antropométricas e cargas.</p>
                 </div>
                 <button onclick="openModal('add-metric-modal')" class="px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-black font-bold rounded-xl text-sm transition flex items-center gap-2 neon-glow">
                     <i class="fa-solid fa-plus"></i> Registar Nova Medida
                 </button>
             </div>
 
-            <!-- Gráficos -->
             <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                <!-- Gráfico de Peso -->
                 <div class="bg-dark-card p-5 rounded-2xl border border-dark-border">
                     <div class="flex justify-between items-center mb-4">
                         <h3 class="font-bold text-white flex items-center gap-2">
                             <i class="fa-solid fa-weight-scale text-brand-500"></i> Progresso de Peso (kg)
                         </h3>
-                        <span class="text-xs text-slate-400">Histórico de Dados</span>
                     </div>
                     <div class="h-64">
                         <canvas id="ptWeightChart"></canvas>
                     </div>
                 </div>
 
-                <!-- Gráfico de Cargas -->
                 <div class="bg-dark-card p-5 rounded-2xl border border-dark-border">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-4 gap-2">
                         <h3 class="font-bold text-white flex items-center gap-2">
@@ -342,7 +320,6 @@
                             <option value="Supino Reto com Barra">Supino Reto</option>
                             <option value="Agachamento Livre">Agachamento</option>
                             <option value="Levantamento Terra">Levantamento Terra</option>
-                            <option value="Puxada à Frente na Polia">Puxada à Frente</option>
                         </select>
                     </div>
                     <div class="h-64">
@@ -351,10 +328,9 @@
                 </div>
             </div>
 
-            <!-- Tabela Histórica de Perímetros -->
             <div class="bg-dark-card rounded-2xl border border-dark-border p-5">
                 <h3 class="font-bold text-white mb-4 flex items-center gap-2">
-                    <i class="fa-solid fa-ruler-combined text-slate-400"></i> Histórico de Perímetros & Composição
+                    <i class="fa-solid fa-ruler-combined text-slate-400"></i> Histórico de Perímetros
                 </h3>
                 <div class="overflow-x-auto custom-scrollbar">
                     <table class="w-full text-left text-sm text-slate-300">
@@ -369,42 +345,37 @@
                             </tr>
                         </thead>
                         <tbody id="pt-metrics-table-body" class="divide-y divide-dark-border">
-                            <!-- Inserido dinamicamente via JS -->
+                            <!-- Inserido dinamicamente -->
                         </tbody>
                     </table>
                 </div>
             </div>
         </section>
 
-        <!-- 3. FICHAS E DIÁRIO DE TREINOS DO ATLETA -->
+        <!-- 3. DIÁRIO DE TREINOS -->
         <section id="tab-workouts" class="tab-content space-y-6">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 class="text-2xl font-bold text-white">Diário de Treino & Registos do Atleta</h2>
-                    <p class="text-slate-400 text-sm">Inspecione os volumes, séries executadas e cargas efetuadas pelo atleta.</p>
+                    <h2 class="text-2xl font-bold text-white">Diário de Treino & Registos</h2>
+                    <p class="text-slate-400 text-sm">Inspecione os volumes e cargas efetuadas pelo atleta.</p>
                 </div>
-
-                <!-- Seletor de Fichas -->
                 <div class="flex bg-slate-800 p-1 rounded-xl border border-dark-border w-full md:w-auto">
                     <button onclick="selectRoutineTab('A')" id="btn-pt-routine-A" class="pt-routine-tab-btn flex-1 md:flex-initial px-4 py-2 rounded-lg text-sm font-semibold transition bg-brand-500 text-black">Treino A</button>
                     <button onclick="selectRoutineTab('B')" id="btn-pt-routine-B" class="pt-routine-tab-btn flex-1 md:flex-initial px-4 py-2 rounded-lg text-sm font-semibold transition text-slate-400 hover:text-white">Treino B</button>
                     <button onclick="selectRoutineTab('C')" id="btn-pt-routine-C" class="pt-routine-tab-btn flex-1 md:flex-initial px-4 py-2 rounded-lg text-sm font-semibold transition text-slate-400 hover:text-white">Treino C</button>
                 </div>
             </div>
-
-            <!-- Lista de Exercícios Executados -->
             <div id="pt-workout-routine-container" class="space-y-4">
                 <!-- Gerado via JS -->
             </div>
         </section>
 
-        <!-- 4. PRESCREVER / EDITAR TREINOS -->
+        <!-- 4. PRESCREVER TREINOS -->
         <section id="tab-prescribe" class="tab-content space-y-6">
             <div>
                 <h2 class="text-2xl font-bold text-white">Prescrição de Treinos</h2>
-                <p class="text-slate-400 text-sm">Crie e atualize as fichas de treino do atleta selecionado.</p>
+                <p class="text-slate-400 text-sm">Crie e atualize as fichas de treino.</p>
             </div>
-
             <div class="bg-dark-card p-6 rounded-2xl border border-dark-border space-y-5">
                 <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 pb-4 border-b border-dark-border">
                     <div class="flex items-center space-x-3">
@@ -415,17 +386,13 @@
                             <option value="C">Treino C - Pernas & Ombros</option>
                         </select>
                     </div>
-
                     <button onclick="addExerciseToPrescription()" class="px-3.5 py-2 bg-slate-800 hover:bg-slate-700 text-brand-400 font-semibold rounded-xl text-xs transition border border-dashed border-brand-500/30 flex items-center gap-1.5">
                         <i class="fa-solid fa-plus"></i> Adicionar Exercício
                     </button>
                 </div>
-
-                <!-- Lista Editável de Exercícios -->
                 <div id="prescription-exercises-list" class="space-y-4">
-                    <!-- Preenchido por JS -->
+                    <!-- Gerado via JS -->
                 </div>
-
                 <div class="pt-4 border-t border-dark-border flex justify-end">
                     <button onclick="saveRoutinePrescription()" class="px-6 py-3 bg-brand-500 hover:bg-brand-600 text-black font-extrabold rounded-xl text-sm transition neon-glow flex items-center gap-2">
                         <i class="fa-solid fa-floppy-disk"></i> Guardar Ficha Prescrita
@@ -434,110 +401,51 @@
             </div>
         </section>
 
-        <!-- 5. NUTRIÇÃO E HÁBITOS DO ATLETA -->
+        <!-- 5. NUTRIÇÃO -->
         <section id="tab-nutrition" class="tab-content space-y-6">
             <div>
                 <h2 class="text-2xl font-bold text-white">Acompanhamento Nutricional</h2>
-                <p class="text-slate-400 text-sm">Monitorize o cumprimento de calorias, macronutrientes e ingestão hídrica.</p>
+                <p class="text-slate-400 text-sm">Monitorize o cumprimento de calorias e água.</p>
             </div>
-
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
-                <!-- Cartão Calorias e Macros -->
                 <div class="lg:col-span-2 bg-dark-card p-6 rounded-2xl border border-dark-border space-y-6">
-                    <div class="flex justify-between items-center">
-                        <h3 class="font-bold text-white text-lg flex items-center gap-2">
-                            <i class="fa-solid fa-utensils text-brand-500"></i> Macronutrientes Registados Hoje
-                        </h3>
-                        <span class="text-xs text-slate-400">Meta Padrão: 2,400 kcal</span>
-                    </div>
-
+                    <h3 class="font-bold text-white text-lg flex items-center gap-2">
+                        <i class="fa-solid fa-utensils text-brand-500"></i> Macronutrientes Registados
+                    </h3>
                     <div>
                         <div class="flex justify-between text-sm mb-1">
-                            <span class="text-slate-300 font-medium">Consumo Calórico</span>
+                            <span class="text-slate-300 font-medium">Calorias</span>
                             <span class="text-white font-bold"><span id="pt-cals-ingested">0</span> / 2400 kcal</span>
                         </div>
                         <div class="w-full h-3 bg-slate-800 rounded-full overflow-hidden">
                             <div id="pt-cals-bar" class="h-full bg-gradient-to-r from-brand-500 to-brand-accent rounded-full transition-all duration-300" style="width: 0%;"></div>
                         </div>
                     </div>
-
-                    <!-- Barras dos Macros -->
-                    <div class="grid grid-cols-3 gap-4 pt-2">
-                        <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
-                            <div class="flex justify-between text-xs text-slate-400 mb-1">
-                                <span>Proteína</span>
-                                <span class="text-brand-400 font-bold"><span id="pt-prot-ingested">0</span> / 180g</span>
-                            </div>
-                            <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                                <div id="pt-prot-bar" class="h-full bg-brand-500 transition-all duration-300" style="width: 0%;"></div>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
-                            <div class="flex justify-between text-xs text-slate-400 mb-1">
-                                <span>Hidratos</span>
-                                <span class="text-amber-400 font-bold"><span id="pt-carbs-ingested">0</span> / 270g</span>
-                            </div>
-                            <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                                <div id="pt-carbs-bar" class="h-full bg-amber-500 transition-all duration-300" style="width: 0%;"></div>
-                            </div>
-                        </div>
-
-                        <div class="bg-slate-800/60 p-4 rounded-xl border border-slate-700/50">
-                            <div class="flex justify-between text-xs text-slate-400 mb-1">
-                                <span>Gordura</span>
-                                <span class="text-rose-400 font-bold"><span id="pt-fat-ingested">0</span> / 65g</span>
-                            </div>
-                            <div class="w-full h-2 bg-slate-700 rounded-full overflow-hidden">
-                                <div id="pt-fat-bar" class="h-full bg-rose-500 transition-all duration-300" style="width: 0%;"></div>
-                            </div>
-                        </div>
-                    </div>
                 </div>
-
-                <!-- Rastreio de Água -->
                 <div class="bg-dark-card p-6 rounded-2xl border border-dark-border flex flex-col justify-between space-y-6">
-                    <div>
-                        <div class="flex justify-between items-center mb-4">
-                            <h3 class="font-bold text-white text-lg flex items-center gap-2">
-                                <i class="fa-solid fa-droplet text-blue-400"></i> Hidratação
-                            </h3>
-                            <span class="text-xs text-blue-400 font-semibold">Meta: 3.0 Litros</span>
-                        </div>
-
-                        <div class="text-center py-8 bg-slate-800/40 rounded-2xl border border-slate-700/50">
-                            <p class="text-4xl font-black text-blue-400 mb-1 font-mono"><span id="pt-water-val">0.0</span> <span class="text-lg">L</span></p>
-                            <p class="text-xs text-slate-400">Consumidos hoje (<span id="pt-water-cups">0</span> copos)</p>
-                        </div>
-                    </div>
-
-                    <div class="p-3 bg-slate-800/60 rounded-xl border border-slate-700/50 text-xs text-slate-400 text-center">
-                        <i class="fa-solid fa-circle-info text-brand-400"></i> Sincronizado automaticamente com os dados do cliente.
+                    <div class="text-center py-8 bg-slate-800/40 rounded-2xl border border-slate-700/50">
+                        <p class="text-4xl font-black text-blue-400 mb-1 font-mono"><span id="pt-water-val">0.0</span> <span class="text-lg">L</span></p>
+                        <p class="text-xs text-slate-400">Consumidos hoje</p>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- 6. NOTAS E OBSERVAÇÕES PRIVADAS -->
+        <!-- 6. NOTAS -->
         <section id="tab-notes" class="tab-content space-y-6">
             <div>
                 <h2 class="text-2xl font-bold text-white">Anotações Clínicas & Técnicas</h2>
-                <p class="text-slate-400 text-sm">Guarde registos de restrições físicas, histórico de lesões e notas de acompanhamento.</p>
+                <p class="text-slate-400 text-sm">Guarde registos de restrições e lesões.</p>
             </div>
-
             <div class="bg-dark-card p-6 rounded-2xl border border-dark-border space-y-4">
-                <label class="block text-sm font-bold text-slate-200">Prontuário Técnico do Atleta</label>
-                <textarea id="full-trainer-notes" rows="12" placeholder="Exemplo: Atleta relata desconforto no ombro direito durante o supino acima de 75kg. Reforçar trabalho de manguito rotador e estabilização de escápulas..." class="w-full bg-slate-800 text-sm text-white p-4 rounded-xl border border-dark-border outline-none focus:border-brand-500 custom-scrollbar resize-y"></textarea>
-                
-                <div class="flex justify-between items-center pt-2">
-                    <span class="text-xs text-slate-500">Guardado localmente no PTPortalDB</span>
+                <textarea id="full-trainer-notes" rows="12" placeholder="Notas técnicas..." class="w-full bg-slate-800 text-sm text-white p-4 rounded-xl border border-dark-border outline-none focus:border-brand-500 custom-scrollbar resize-y"></textarea>
+                <div class="flex justify-end pt-2">
                     <button onclick="saveFullNotes()" class="px-5 py-2.5 bg-brand-500 hover:bg-brand-600 text-black font-extrabold rounded-xl text-xs transition neon-glow">
                         <i class="fa-solid fa-floppy-disk mr-1"></i> Guardar Anotações
                     </button>
                 </div>
             </div>
         </section>
-
     </main>
 
     <!-- NAVEGAÇÃO INFERIOR MOBILE -->
@@ -564,7 +472,7 @@
         </button>
     </nav>
 
-    <!-- MODAL IMPORTAÇÃO / SINCRONIZAÇÃO JSON DE ATLETAS DO PM STUDIO -->
+    <!-- MODAL GOOGLE DRIVE SYNC & LISTAGEM AUTOMÁTICA -->
     <div id="sync-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-dark-card border border-brand-500/30 p-6 rounded-2xl w-full max-w-lg space-y-5 relative shadow-2xl">
             <button onclick="closeModal('sync-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
@@ -572,136 +480,46 @@
             </button>
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 rounded-xl bg-brand-500/10 text-brand-500 flex items-center justify-center font-bold text-xl border border-brand-500/30">
-                    <i class="fa-solid fa-file-import"></i>
+                    <i class="fa-solid fa-cloud-arrow-down"></i>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold text-white">Importar Dados do Atleta (JSON)</h3>
-                    <p class="text-xs text-slate-400">Carregue o ficheiro ou estrutura de exportação do PM Studio App.</p>
+                    <h3 class="text-xl font-bold text-white">Google Drive - Atletas</h3>
+                    <p class="text-xs text-slate-400">Selecione um atleta da pasta PMStudio_Atletas para importar.</p>
                 </div>
             </div>
 
-            <div class="space-y-4">
-                <div class="p-4 border-2 border-dashed border-slate-700 hover:border-brand-500 rounded-2xl text-center bg-slate-800/40 cursor-pointer transition" onclick="document.getElementById('file-input-json').click()">
-                    <i class="fa-solid fa-cloud-arrow-up text-3xl text-brand-400 mb-2"></i>
-                    <p class="text-xs font-semibold text-white">Clique para carregar o ficheiro .JSON do Atleta</p>
-                    <p class="text-[10px] text-slate-500 mt-1">Compatível com o formato IndexedDB de exportação</p>
-                    <input type="file" id="file-input-json" accept=".json" class="hidden" onchange="handleJSONImport(event)">
-                </div>
-
-                <div class="text-center text-xs text-slate-500">OU cole o texto JSON no campo abaixo:</div>
-
-                <textarea id="json-paste-area" rows="4" placeholder='{"perfil": {...}, "peso": [...]}' class="w-full bg-slate-800 text-xs text-slate-300 p-3 rounded-xl border border-dark-border outline-none focus:border-brand-500 font-mono resize-none"></textarea>
-
-                <button onclick="handlePastedJSONImport()" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-black font-extrabold rounded-xl text-xs transition neon-glow">
-                    Processar e Importar Atleta
+            <div class="space-y-3">
+                <button onclick="fetchDriveFilesList()" class="w-full py-2.5 bg-slate-800 hover:bg-slate-700 text-brand-400 text-xs font-bold rounded-xl border border-dark-border transition flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-rotate-right"></i> Atualizar Lista do Drive
                 </button>
+
+                <div id="drive-files-container" class="max-h-60 overflow-y-auto custom-scrollbar space-y-2 border border-dark-border p-3 rounded-xl bg-slate-900/50">
+                    <p class="text-xs text-slate-500 text-center py-4">Clique no botão acima para carregar os ficheiros da nuvem.</p>
+                </div>
             </div>
         </div>
     </div>
 
-    <!-- MODAL ADICIONAR NOVO ATLETA -->
-    <div id="add-student-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-dark-card border border-dark-border p-6 rounded-2xl w-full max-w-md space-y-4 relative shadow-2xl">
-            <button onclick="closeModal('add-student-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <h3 class="text-xl font-bold text-white">Registar Novo Atleta</h3>
-            
-            <form id="form-add-student" onsubmit="handleAddNewStudent(event)" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Nome Completo</label>
-                    <input type="text" id="new-student-name" required placeholder="Ex: Bernardo Silva" class="w-full bg-slate-800 text-white text-xs p-3 rounded-xl border border-dark-border outline-none focus:border-brand-500">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Peso Inicial (kg)</label>
-                        <input type="number" step="0.1" id="new-student-weight" required placeholder="Ex: 75.0" class="w-full bg-slate-800 text-white text-xs p-3 rounded-xl border border-dark-border outline-none focus:border-brand-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">% Gordura Inicial</label>
-                        <input type="number" step="0.1" id="new-student-fat" placeholder="Ex: 16.0" class="w-full bg-slate-800 text-white text-xs p-3 rounded-xl border border-dark-border outline-none focus:border-brand-500">
-                    </div>
-                </div>
-                <button type="submit" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-black font-extrabold rounded-xl text-xs transition mt-2 neon-glow">
-                    Criar Perfil no Portal
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- MODAL REGISTAR NOVA MEDIDA MANUAL -->
-    <div id="add-metric-modal" class="fixed inset-0 bg-black/70 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
-        <div class="bg-dark-card border border-dark-border p-6 rounded-2xl w-full max-w-md space-y-4 relative">
-            <button onclick="closeModal('add-metric-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
-                <i class="fa-solid fa-xmark text-lg"></i>
-            </button>
-            <h3 class="text-xl font-bold text-white">Registar Medida do Atleta</h3>
-            
-            <form id="form-add-metric" onsubmit="handleMetricSubmit(event)" class="space-y-3">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">Data</label>
-                    <input type="date" id="input-metric-date" required class="w-full bg-slate-800 border border-dark-border text-white text-sm p-3 rounded-xl outline-none focus:border-brand-500">
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Peso (kg)</label>
-                        <input type="number" step="0.1" id="input-metric-weight" placeholder="Ex: 78.5" required class="w-full bg-slate-800 border border-dark-border text-white text-sm p-3 rounded-xl outline-none focus:border-brand-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">% Gordura</label>
-                        <input type="number" step="0.1" id="input-metric-fat" placeholder="Ex: 14.5" class="w-full bg-slate-800 border border-dark-border text-white text-sm p-3 rounded-xl outline-none focus:border-brand-500">
-                    </div>
-                </div>
-                <div class="grid grid-cols-3 gap-2">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Braço (cm)</label>
-                        <input type="number" step="0.5" id="input-metric-arm" placeholder="38" class="w-full bg-slate-800 border border-dark-border text-white text-sm p-2.5 rounded-xl outline-none focus:border-brand-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Cintura (cm)</label>
-                        <input type="number" step="0.5" id="input-metric-waist" placeholder="81" class="w-full bg-slate-800 border border-dark-border text-white text-sm p-2.5 rounded-xl outline-none focus:border-brand-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-400 mb-1">Peito (cm)</label>
-                        <input type="number" step="0.5" id="input-metric-chest" placeholder="102" class="w-full bg-slate-800 border border-dark-border text-white text-sm p-2.5 rounded-xl outline-none focus:border-brand-500">
-                    </div>
-                </div>
-                <button type="submit" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-black font-bold rounded-xl text-sm transition mt-4 neon-glow">
-                    Guardar no Portal DB
-                </button>
-            </form>
-        </div>
-    </div>
-
-    <!-- NOTIFICAÇÃO TOAST CUSTOMIZADA -->
+    <!-- NOTIFICAÇÃO TOAST -->
     <div id="toast-notification" class="fixed bottom-20 md:bottom-8 right-4 bg-brand-500 text-black px-5 py-3 rounded-2xl font-bold shadow-2xl z-50 transform translate-y-32 transition-transform duration-300 flex items-center space-x-3">
         <i class="fa-solid fa-circle-check text-lg"></i>
         <span id="toast-message" class="text-sm">Operação efetuada com sucesso!</span>
     </div>
 
-    <!-- LÓGICA JAVASCRIPT & INDEXEDDB DO PORTAL DO PERSONAL TRAINER -->
+    <!-- SCRIPT JAVASCRIPT & GOOGLE DRIVE API INTEGRATION -->
     <script>
-        /* =============================================================
-           1. ARMAZENAMENTO INDEXEDDB (PTPortalDB)
-           ============================================================= */
+        const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwg0YBjv4_djqq6Nl4GqxYhbG-OKTGLf1S_nQaRGgOSPXFwZcHiRhkSmZUcOuYZ3rA_jA/exec";
         const DB_NAME = 'PTPortalDB';
         const DB_VERSION = 1;
 
         class PTPortalDB {
-            constructor() {
-                this.db = null;
-            }
-
+            constructor() { this.db = null; }
             async init() {
                 return new Promise((resolve, reject) => {
                     const request = indexedDB.open(DB_NAME, DB_VERSION);
-
                     request.onupgradeneeded = (e) => {
                         const db = e.target.result;
-
-                        if (!db.objectStoreNames.contains('alunos')) {
-                            db.createObjectStore('alunos', { keyPath: 'id' });
-                        }
+                        if (!db.objectStoreNames.contains('alunos')) db.createObjectStore('alunos', { keyPath: 'id' });
                         if (!db.objectStoreNames.contains('medidas')) {
                             const store = db.createObjectStore('medidas', { keyPath: 'id', autoIncrement: true });
                             store.createIndex('studentId', 'studentId', { unique: false });
@@ -710,82 +528,50 @@
                             const store = db.createObjectStore('forca', { keyPath: 'id', autoIncrement: true });
                             store.createIndex('studentId', 'studentId', { unique: false });
                         }
-                        if (!db.objectStoreNames.contains('fichas')) {
-                            db.createObjectStore('fichas', { keyPath: 'key' });
-                        }
-                        if (!db.objectStoreNames.contains('nutricao')) {
-                            db.createObjectStore('nutricao', { keyPath: 'key' });
-                        }
-                        if (!db.objectStoreNames.contains('notas')) {
-                            db.createObjectStore('notas', { keyPath: 'studentId' });
-                        }
+                        if (!db.objectStoreNames.contains('fichas')) db.createObjectStore('fichas', { keyPath: 'key' });
+                        if (!db.objectStoreNames.contains('nutricao')) db.createObjectStore('nutricao', { keyPath: 'key' });
+                        if (!db.objectStoreNames.contains('notas')) db.createObjectStore('notas', { keyPath: 'studentId' });
                     };
-
-                    request.onsuccess = (e) => {
-                        this.db = e.target.result;
-                        resolve(this.db);
-                    };
-
-                    request.onerror = (e) => reject('Erro ao inicializar PTPortalDB: ' + e.target.error);
+                    request.onsuccess = (e) => { this.db = e.target.result; resolve(this.db); };
+                    request.onerror = (e) => reject('Erro IndexedDB: ' + e.target.error);
                 });
             }
-
             async getAll(storeName) {
                 return new Promise((resolve, reject) => {
                     const tx = this.db.transaction(storeName, 'readonly');
-                    const store = tx.objectStore(storeName);
-                    const req = store.getAll();
+                    const req = tx.objectStore(storeName).getAll();
                     req.onsuccess = () => resolve(req.result);
                     req.onerror = () => reject(req.error);
                 });
             }
-
             async get(storeName, key) {
                 return new Promise((resolve, reject) => {
                     const tx = this.db.transaction(storeName, 'readonly');
-                    const store = tx.objectStore(storeName);
-                    const req = store.get(key);
+                    const req = tx.objectStore(storeName).get(key);
                     req.onsuccess = () => resolve(req.result);
                     req.onerror = () => reject(req.error);
                 });
             }
-
             async put(storeName, item) {
                 return new Promise((resolve, reject) => {
                     const tx = this.db.transaction(storeName, 'readwrite');
-                    const store = tx.objectStore(storeName);
-                    const req = store.put(item);
+                    const req = tx.objectStore(storeName).put(item);
                     req.onsuccess = () => resolve(req.result);
                     req.onerror = () => reject(req.error);
                 });
             }
-
             async add(storeName, item) {
                 return new Promise((resolve, reject) => {
                     const tx = this.db.transaction(storeName, 'readwrite');
-                    const store = tx.objectStore(storeName);
-                    const req = store.add(item);
+                    const req = tx.objectStore(storeName).add(item);
                     req.onsuccess = () => resolve(req.result);
                     req.onerror = () => reject(req.error);
                 });
             }
-
-            async delete(storeName, key) {
-                return new Promise((resolve, reject) => {
-                    const tx = this.db.transaction(storeName, 'readwrite');
-                    const store = tx.objectStore(storeName);
-                    const req = store.delete(key);
-                    req.onsuccess = () => resolve(req.result);
-                    req.onerror = () => reject(req.error);
-                });
-            }
-
             async getByIndex(storeName, indexName, value) {
                 return new Promise((resolve, reject) => {
                     const tx = this.db.transaction(storeName, 'readonly');
-                    const store = tx.objectStore(storeName);
-                    const index = store.index(indexName);
-                    const req = index.getAll(value);
+                    const req = tx.objectStore(storeName).index(indexName).getAll(value);
                     req.onsuccess = () => resolve(req.result);
                     req.onerror = () => reject(req.error);
                 });
@@ -793,23 +579,12 @@
         }
 
         const portalDB = new PTPortalDB();
-
-        /* =============================================================
-           2. ESTADO E CARREGAMENTO INICIAL DE DEMO
-           ============================================================= */
         let activeStudentId = null;
         let weightChartInstance = null;
         let strengthChartInstance = null;
         let currentPTRoutineTab = 'A';
+        let currentEditingRoutineObj = null;
 
-        async function setupInitialDataIfEmpty() {
-            // Nenhuma inserção predefinida de João Silva ou Ana Pereira.
-            // Os dados começam vazios para que novos atletas sejam registados ou importados.
-        }
-
-        /* =============================================================
-           3. SINCRONIZAÇÃO E ATUALIZAÇÃO DA INTERFACE
-           ============================================================= */
         function getInitials(name) {
             if (!name) return '--';
             const parts = name.trim().split(' ');
@@ -821,27 +596,16 @@
             const alunos = await portalDB.getAll('alunos');
             const sideSelect = document.getElementById('sidebar-student-select');
             const mobSelect = document.getElementById('mobile-student-select');
-
             sideSelect.innerHTML = '';
             mobSelect.innerHTML = '';
 
             if (alunos.length === 0) {
-                const optNone = document.createElement('option');
-                optNone.value = '';
-                optNone.innerText = 'Nenhum atleta registado';
-                sideSelect.appendChild(optNone);
-
-                const optNoneMob = document.createElement('option');
-                optNoneMob.value = '';
-                optNoneMob.innerText = 'Nenhum atleta registado';
-                mobSelect.appendChild(optNoneMob);
+                sideSelect.innerHTML = '<option value="">Nenhum atleta</option>';
+                mobSelect.innerHTML = '<option value="">Nenhum atleta</option>';
                 return;
             }
 
-            // Se activeStudentId não estiver definido mas existirem alunos, define o primeiro
-            if (!activeStudentId && alunos.length > 0) {
-                activeStudentId = alunos[0].id;
-            }
+            if (!activeStudentId && alunos.length > 0) activeStudentId = alunos[0].id;
 
             alunos.forEach(a => {
                 const opt1 = document.createElement('option');
@@ -858,96 +622,16 @@
             });
         }
 
-        async function changeStudent(studentId) {
-            if (!studentId) return;
-            activeStudentId = studentId;
-            document.getElementById('sidebar-student-select').value = studentId;
-            document.getElementById('mobile-student-select').value = studentId;
-
+        async function changeStudent(id) {
+            if (!id) return;
+            activeStudentId = id;
+            document.getElementById('sidebar-student-select').value = id;
+            document.getElementById('mobile-student-select').value = id;
             await refreshPortalUI();
         }
 
-        async function deleteActiveStudent() {
-            if (!activeStudentId) {
-                showToast("Nenhum atleta selecionado para eliminar.");
-                return;
-            }
-
-            const student = await portalDB.get('alunos', activeStudentId);
-            const studentName = student ? student.name : "este atleta";
-
-            if (!confirm(`Tem a certeza de que deseja eliminar o atleta "${studentName}"? Esta ação removerá o perfil e todo o seu histórico.`)) {
-                return;
-            }
-
-            // Eliminar da tabela principal
-            await portalDB.delete('alunos', activeStudentId);
-
-            // Limpar medidas, força, fichas, nutrição e notas associadas
-            const medidas = await portalDB.getByIndex('medidas', 'studentId', activeStudentId);
-            for (const m of medidas) {
-                if (m.id) await portalDB.delete('medidas', m.id);
-            }
-
-            const forcaData = await portalDB.getByIndex('forca', 'studentId', activeStudentId);
-            for (const f of forcaData) {
-                if (f.id) await portalDB.delete('forca', f.id);
-            }
-
-            ['A', 'B', 'C'].forEach(async (code) => {
-                await portalDB.delete('fichas', `${activeStudentId}_${code}`);
-            });
-
-            await portalDB.delete('notas', activeStudentId);
-
-            showToast(`Atleta ${studentName} eliminado com sucesso.`);
-
-            const remainingStudents = await portalDB.getAll('alunos');
-            if (remainingStudents.length > 0) {
-                activeStudentId = remainingStudents[0].id;
-                await populateStudentDropdowns();
-                await refreshPortalUI();
-            } else {
-                activeStudentId = null;
-                await populateStudentDropdowns();
-                document.getElementById('student-name-display').innerText = "Sem Atletas";
-                document.getElementById('student-avatar-large').innerText = "--";
-                document.getElementById('dash-routine-summary').innerHTML = '<p class="text-xs text-slate-500 py-2">Sem atletas registados.</p>';
-                document.getElementById('pt-metrics-table-body').innerHTML = '';
-                document.getElementById('pt-workout-routine-container').innerHTML = '';
-            }
-        }
-
         async function refreshPortalUI() {
-            if (!activeStudentId) {
-                document.getElementById('student-name-display').innerText = "Sem Atletas";
-                document.getElementById('student-avatar-large').innerText = "--";
-                document.getElementById('student-level-badge').innerText = "Nível 1";
-                document.getElementById('student-streak-display').innerText = "0";
-                document.getElementById('student-xp-display').innerText = "0";
-                document.getElementById('student-workouts-display').innerText = "0";
-                document.getElementById('dash-weight').innerText = "--";
-                document.getElementById('dash-fat').innerText = "--";
-                document.getElementById('dash-cals').innerText = "0";
-                document.getElementById('dash-water').innerText = "0.0";
-                document.getElementById('pt-cals-ingested').innerText = "0";
-                document.getElementById('pt-cals-bar').style.width = "0%";
-                document.getElementById('pt-prot-ingested').innerText = "0";
-                document.getElementById('pt-prot-bar').style.width = "0%";
-                document.getElementById('pt-carbs-ingested').innerText = "0";
-                document.getElementById('pt-carbs-bar').style.width = "0%";
-                document.getElementById('pt-fat-ingested').innerText = "0";
-                document.getElementById('pt-fat-bar').style.width = "0%";
-                document.getElementById('pt-water-val').innerText = "0.0";
-                document.getElementById('pt-water-cups').innerText = "0";
-                document.getElementById('quick-trainer-note').value = "";
-                document.getElementById('full-trainer-notes').value = "";
-                document.getElementById('dash-routine-summary').innerHTML = `<p class="text-xs text-slate-500 py-2">Sem ficha ativa configurada para o atleta.</p>`;
-                document.getElementById('pt-metrics-table-body').innerHTML = '';
-                document.getElementById('pt-workout-routine-container').innerHTML = `<p class="text-xs text-slate-500 py-4">Sem exercícios prescritos.</p>`;
-                return;
-            }
-
+            if (!activeStudentId) return;
             const student = await portalDB.get('alunos', activeStudentId);
             if (!student) return;
 
@@ -960,33 +644,19 @@
 
             const medidas = await portalDB.getByIndex('medidas', 'studentId', activeStudentId);
             medidas.sort((a, b) => new Date(a.date) - new Date(b.date));
-
             if (medidas.length > 0) {
                 const last = medidas[medidas.length - 1];
                 document.getElementById('dash-weight').innerText = last.weight;
                 document.getElementById('dash-fat').innerText = last.fat || '--';
-            } else {
-                document.getElementById('dash-weight').innerText = '--';
-                document.getElementById('dash-fat').innerText = '--';
             }
 
             const today = new Date().toISOString().split('T')[0];
-            const nutricao = await portalDB.get('nutricao', `${activeStudentId}_${today}`) || { water: 0, cals: 0, prot: 0, carbs: 0, fat: 0 };
-
+            const nutricao = await portalDB.get('nutricao', `${activeStudentId}_${today}`) || { water: 0, cals: 0 };
             document.getElementById('dash-cals').innerText = nutricao.cals;
             document.getElementById('dash-water').innerText = nutricao.water.toFixed(1);
-
             document.getElementById('pt-cals-ingested').innerText = nutricao.cals;
             document.getElementById('pt-cals-bar').style.width = `${Math.min(100, (nutricao.cals / 2400) * 100)}%`;
-            document.getElementById('pt-prot-ingested').innerText = nutricao.prot;
-            document.getElementById('pt-prot-bar').style.width = `${Math.min(100, (nutricao.prot / 180) * 100)}%`;
-            document.getElementById('pt-carbs-ingested').innerText = nutricao.carbs;
-            document.getElementById('pt-carbs-bar').style.width = `${Math.min(100, (nutricao.carbs / 270) * 100)}%`;
-            document.getElementById('pt-fat-ingested').innerText = nutricao.fat;
-            document.getElementById('pt-fat-bar').style.width = `${Math.min(100, (nutricao.fat / 65) * 100)}%`;
-
             document.getElementById('pt-water-val').innerText = nutricao.water.toFixed(1);
-            document.getElementById('pt-water-cups').innerText = Math.round(nutricao.water / 0.25);
 
             const nota = await portalDB.get('notas', activeStudentId);
             const notaText = nota ? nota.text : '';
@@ -994,569 +664,239 @@
             document.getElementById('full-trainer-notes').value = notaText;
 
             await renderDashboardRoutineSummary();
-            await renderStudentBadges(student);
             renderMetricsTable(medidas);
             await renderPTRoutine(currentPTRoutineTab);
             await loadPrescriptionRoutine(document.getElementById('prescribe-routine-select').value);
             renderCharts();
         }
 
-        /* =============================================================
-           4. COMPONENTES DO DASHBOARD
-           ============================================================= */
         async function renderDashboardRoutineSummary() {
             const container = document.getElementById('dash-routine-summary');
             container.innerHTML = '';
-
-            if (!activeStudentId) return;
-
             const ficha = await portalDB.get('fichas', `${activeStudentId}_A`);
             if (!ficha || !ficha.exercises) {
-                container.innerHTML = `<p class="text-xs text-slate-500 py-2">Sem ficha ativa configurada para o atleta.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-500 py-2">Sem ficha ativa.</p>`;
                 return;
             }
-
             ficha.exercises.slice(0, 3).forEach((ex, idx) => {
-                const completedSets = ex.sets ? ex.sets.filter(s => s.done).length : 0;
-                const totalSets = ex.sets ? ex.sets.length : 0;
-
                 const item = document.createElement('div');
                 item.className = "flex items-center justify-between p-3 bg-slate-800/60 rounded-xl border border-slate-700/50";
-                item.innerHTML = `
-                    <div class="flex items-center space-x-3">
-                        <div class="w-8 h-8 rounded-lg bg-slate-700 flex items-center justify-center text-xs font-bold text-brand-400">${idx + 1}</div>
-                        <div>
-                            <p class="text-sm font-semibold text-white">${ex.name}</p>
-                            <p class="text-xs text-slate-400">${totalSets} séries agendadas</p>
-                        </div>
-                    </div>
-                    <span class="text-xs ${completedSets === totalSets && totalSets > 0 ? 'text-brand-400' : 'text-slate-400'} font-semibold">
-                        ${completedSets}/${totalSets} concluídas
-                    </span>
-                `;
+                item.innerHTML = `<span class="text-sm font-semibold text-white">${ex.name}</span><span class="text-xs text-slate-400">${ex.sets.length} séries</span>`;
                 container.appendChild(item);
-            });
-        }
-
-        async function renderStudentBadges(student) {
-            const container = document.getElementById('dash-badges-grid');
-            container.innerHTML = '';
-
-            const badges = [
-                { title: "Atleta Oficial", icon: "fa-user-check", active: true },
-                { title: "Consistente", icon: "fa-dumbbell", active: (student.completedWorkoutsMonth || 0) >= 8 },
-                { title: "Em Fogo", icon: "fa-fire", active: (student.streak || 0) >= 5 },
-                { title: "Hidratação OK", icon: "fa-glass-water", active: true },
-                { title: "Nível Avançado", icon: "fa-trophy", active: (student.level || 1) >= 2 }
-            ];
-
-            badges.forEach(b => {
-                const card = document.createElement('div');
-                card.className = `p-3 rounded-xl border text-center ${b.active ? 'bg-slate-800/80 border-brand-500/40 text-brand-400' : 'bg-slate-900/40 border-dark-border text-slate-600'}`;
-                card.innerHTML = `
-                    <i class="fa-solid ${b.icon} text-lg mb-1"></i>
-                    <p class="text-[10px] font-bold truncate">${b.title}</p>
-                `;
-                container.appendChild(card);
-            });
-        }
-
-        /* =============================================================
-           5. GRÁFICOS CHART.JS
-           ============================================================= */
-        async function renderCharts() {
-            const ctxWeight = document.getElementById('ptWeightChart').getContext('2d');
-            if (weightChartInstance) weightChartInstance.destroy();
-
-            let weightLabels = [];
-            let weightData = [];
-
-            if (activeStudentId) {
-                const medidas = await portalDB.getByIndex('medidas', 'studentId', activeStudentId);
-                medidas.sort((a, b) => new Date(a.date) - new Date(b.date));
-                weightLabels = medidas.map(m => m.date);
-                weightData = medidas.map(m => m.weight);
-            }
-
-            weightChartInstance = new Chart(ctxWeight, {
-                type: 'line',
-                data: {
-                    labels: weightLabels,
-                    datasets: [{
-                        label: 'Peso (kg)',
-                        data: weightData,
-                        borderColor: '#ccff00',
-                        backgroundColor: 'rgba(204, 255, 0, 0.1)',
-                        borderWidth: 3,
-                        fill: true,
-                        tension: 0.3,
-                        pointBackgroundColor: '#ccff00',
-                        pointRadius: 5
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { color: '#2a2a2a' }, ticks: { color: '#94a3b8' } },
-                        y: { grid: { color: '#2a2a2a' }, ticks: { color: '#94a3b8' } }
-                    }
-                }
-            });
-
-            const selectedEx = document.getElementById('pt-exercise-chart-select').value;
-            let strengthLabels = [];
-            let strengthData = [];
-
-            if (activeStudentId) {
-                const forcaData = await portalDB.getByIndex('forca', 'studentId', activeStudentId);
-                const filtered = forcaData.filter(f => f.exercise === selectedEx);
-                filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
-                strengthLabels = filtered.map(d => d.date);
-                strengthData = filtered.map(d => d.load);
-            }
-
-            const ctxStrength = document.getElementById('ptStrengthChart').getContext('2d');
-            if (strengthChartInstance) strengthChartInstance.destroy();
-
-            strengthChartInstance = new Chart(ctxStrength, {
-                type: 'bar',
-                data: {
-                    labels: strengthLabels,
-                    datasets: [{
-                        label: 'Carga (kg)',
-                        data: strengthData,
-                        backgroundColor: '#00f0ff',
-                        borderRadius: 8
-                    }]
-                },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { display: false }, ticks: { color: '#94a3b8' } },
-                        y: { grid: { color: '#2a2a2a' }, ticks: { color: '#94a3b8' } }
-                    }
-                }
             });
         }
 
         function renderMetricsTable(medidas) {
             const tbody = document.getElementById('pt-metrics-table-body');
             tbody.innerHTML = '';
-            const sorted = [...medidas].reverse();
-            sorted.forEach(m => {
+            [...medidas].reverse().forEach(m => {
                 const tr = document.createElement('tr');
-                tr.innerHTML = `
-                    <td class="p-3 font-medium text-white">${m.date}</td>
-                    <td class="p-3 text-brand-400 font-bold">${m.weight} kg</td>
-                    <td class="p-3">${m.fat || '-'}%</td>
-                    <td class="p-3">${m.arm || '-'} cm</td>
-                    <td class="p-3">${m.waist || '-'} cm</td>
-                    <td class="p-3">${m.chest || '-'} cm</td>
-                `;
+                tr.innerHTML = `<td class="p-3 text-white">${m.date}</td><td class="p-3 text-brand-400 font-bold">${m.weight} kg</td><td class="p-3">${m.fat || '-'}%</td><td class="p-3">${m.arm || '-'} cm</td><td class="p-3">${m.waist || '-'} cm</td><td class="p-3">${m.chest || '-'} cm</td>`;
                 tbody.appendChild(tr);
             });
         }
 
-        /* =============================================================
-           6. CONSULTA DE FICHA DE TREINOS
-           ============================================================= */
-        async function selectRoutineTab(code) {
-            currentPTRoutineTab = code;
-            document.querySelectorAll('.pt-routine-tab-btn').forEach(btn => {
-                btn.classList.remove('bg-brand-500', 'text-black');
-                btn.classList.add('text-slate-400');
-            });
-            const activeBtn = document.getElementById(`btn-pt-routine-${code}`);
-            activeBtn.classList.add('bg-brand-500', 'text-black');
-            activeBtn.classList.remove('text-slate-400');
+        async function renderCharts() {
+            const ctxWeight = document.getElementById('ptWeightChart').getContext('2d');
+            if (weightChartInstance) weightChartInstance.destroy();
+            const medidas = await portalDB.getByIndex('medidas', 'studentId', activeStudentId);
+            medidas.sort((a, b) => new Date(a.date) - new Date(b.date));
 
-            await renderPTRoutine(code);
+            weightChartInstance = new Chart(ctxWeight, {
+                type: 'line',
+                data: {
+                    labels: medidas.map(m => m.date),
+                    datasets: [{ label: 'Peso (kg)', data: medidas.map(m => m.weight), borderColor: '#ccff00', backgroundColor: 'rgba(204,255,0,0.1)', fill: true, tension: 0.3 }]
+                },
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } } }
+            });
         }
 
         async function renderPTRoutine(code) {
-            if (!activeStudentId) return;
-
             const ficha = await portalDB.get('fichas', `${activeStudentId}_${code}`);
             const container = document.getElementById('pt-workout-routine-container');
             container.innerHTML = '';
-
-            if (!ficha || !ficha.exercises || ficha.exercises.length === 0) {
-                container.innerHTML = `<p class="text-xs text-slate-500 py-4">Sem exercícios prescritos para a Ficha ${code}.</p>`;
+            if (!ficha || !ficha.exercises) {
+                container.innerHTML = `<p class="text-xs text-slate-500 py-4">Sem exercícios prescritos.</p>`;
                 return;
             }
-
-            ficha.exercises.forEach((ex, exIndex) => {
+            ficha.exercises.forEach(ex => {
                 const card = document.createElement('div');
-                card.className = "bg-dark-card p-5 rounded-2xl border border-dark-border space-y-3";
-
-                let setsHTML = '';
-                ex.sets.forEach((s, sIdx) => {
-                    setsHTML += `
-                        <div class="flex items-center justify-between bg-slate-800/50 p-2.5 rounded-xl border border-slate-700/40 text-xs">
-                            <span class="font-bold text-slate-400">Série #${sIdx + 1}</span>
-                            <span class="text-white font-semibold">${s.kg} kg</span>
-                            <span class="text-slate-300">${s.reps} reps</span>
-                            <span class="px-2 py-0.5 rounded text-[10px] font-bold ${s.done ? 'bg-brand-500/20 text-brand-400' : 'bg-slate-700 text-slate-400'}">
-                                ${s.done ? 'Concluída' : 'Pendente'}
-                            </span>
-                        </div>
-                    `;
-                });
-
-                card.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <h4 class="font-bold text-white text-sm">${ex.name}</h4>
-                        <span class="text-xs text-brand-accent font-medium">${ex.sets.length} séries</span>
-                    </div>
-                    <div class="space-y-2">
-                        ${setsHTML}
-                    </div>
-                `;
+                card.className = "bg-dark-card p-4 rounded-xl border border-dark-border";
+                card.innerHTML = `<h4 class="font-bold text-white text-sm mb-2">${ex.name}</h4><p class="text-xs text-slate-400">${ex.sets.length} séries</p>`;
                 container.appendChild(card);
             });
         }
 
-        /* =============================================================
-           7. PRESCRIÇÃO E EDIÇÃO DE TREINO
-           ============================================================= */
-        let currentEditingRoutineObj = null;
-
         async function loadPrescriptionRoutine(code) {
-            if (!activeStudentId) {
-                document.getElementById('prescription-exercises-list').innerHTML = `<p class="text-xs text-slate-500 py-2">Selecione ou crie um atleta para prescrever treinos.</p>`;
-                return;
-            }
-
             let ficha = await portalDB.get('fichas', `${activeStudentId}_${code}`);
-            if (!ficha) {
-                ficha = {
-                    key: `${activeStudentId}_${code}`,
-                    studentId: activeStudentId,
-                    routineCode: code,
-                    title: `Treino ${code}`,
-                    exercises: []
-                };
-            }
+            if (!ficha) ficha = { key: `${activeStudentId}_${code}`, studentId: activeStudentId, routineCode: code, title: `Treino ${code}`, exercises: [] };
             currentEditingRoutineObj = ficha;
-
             const list = document.getElementById('prescription-exercises-list');
             list.innerHTML = '';
-
-            if (ficha.exercises.length === 0) {
-                list.innerHTML = `<p class="text-xs text-slate-500 py-2">Ficha vazia. Clique em 'Adicionar Exercício' para prescrever.</p>`;
-                return;
-            }
-
-            ficha.exercises.forEach((ex, exIndex) => {
+            ficha.exercises.forEach((ex, idx) => {
                 const item = document.createElement('div');
-                item.className = "p-4 bg-slate-800/60 rounded-xl border border-slate-700/50 space-y-3";
-                item.innerHTML = `
-                    <div class="flex justify-between items-center gap-2">
-                        <input type="text" value="${ex.name}" onchange="updatePrescriptionExName(${exIndex}, this.value)" placeholder="Nome do Exercício" class="bg-slate-700 text-xs font-bold text-white p-2 rounded-lg outline-none focus:border-brand-500 w-full border border-slate-600">
-                        <button onclick="removeExerciseFromPrescription(${exIndex})" class="p-2 text-rose-400 hover:bg-rose-500/10 rounded-lg transition">
-                            <i class="fa-solid fa-trash"></i>
-                        </button>
-                    </div>
-
-                    <div class="flex items-center space-x-2 text-xs">
-                        <span class="text-slate-400">N.º Séries:</span>
-                        <input type="number" value="${ex.sets.length}" onchange="updatePrescriptionExSetsCount(${exIndex}, this.value)" class="w-16 bg-slate-700 text-white p-1 rounded text-center outline-none border border-slate-600">
-                        <span class="text-slate-400">Carga Base (kg):</span>
-                        <input type="number" value="${ex.sets[0] ? ex.sets[0].kg : 0}" onchange="updatePrescriptionExDefaultKg(${exIndex}, this.value)" class="w-16 bg-slate-700 text-white p-1 rounded text-center outline-none border border-slate-600">
-                    </div>
-                `;
+                item.className = "p-3 bg-slate-800/60 rounded-xl border border-slate-700/50 flex justify-between items-center";
+                item.innerHTML = `<span class="text-xs text-white font-bold">${ex.name}</span><button onclick="removeEx(${idx})" class="text-rose-400 text-xs"><i class="fa-solid fa-trash"></i></button>`;
                 list.appendChild(item);
             });
-        }
-
-        function updatePrescriptionExName(exIndex, name) {
-            if (currentEditingRoutineObj && currentEditingRoutineObj.exercises[exIndex]) {
-                currentEditingRoutineObj.exercises[exIndex].name = name;
-            }
-        }
-
-        function updatePrescriptionExDefaultKg(exIndex, kg) {
-            if (currentEditingRoutineObj && currentEditingRoutineObj.exercises[exIndex]) {
-                const num = parseFloat(kg) || 0;
-                currentEditingRoutineObj.exercises[exIndex].sets.forEach(s => s.kg = num);
-            }
-        }
-
-        function updatePrescriptionExSetsCount(exIndex, count) {
-            if (currentEditingRoutineObj && currentEditingRoutineObj.exercises[exIndex]) {
-                const target = parseInt(count) || 1;
-                const currentSets = currentEditingRoutineObj.exercises[exIndex].sets;
-                const baseKg = currentSets[0] ? currentSets[0].kg : 0;
-
-                if (target > currentSets.length) {
-                    while (currentSets.length < target) {
-                        currentSets.push({ kg: baseKg, reps: 10, done: false });
-                    }
-                } else if (target < currentSets.length && target > 0) {
-                    currentSets.splice(target);
-                }
-            }
-        }
-
-        function addExerciseToPrescription() {
-            if (!activeStudentId) {
-                showToast("Selecione ou crie um atleta primeiro.");
-                return;
-            }
-            if (!currentEditingRoutineObj) {
-                const code = document.getElementById('prescribe-routine-select').value;
-                currentEditingRoutineObj = {
-                    key: `${activeStudentId}_${code}`,
-                    studentId: activeStudentId,
-                    routineCode: code,
-                    title: `Treino ${code}`,
-                    exercises: []
-                };
-            }
-            currentEditingRoutineObj.exercises.push({
-                name: "Novo Exercício Prescrito",
-                sets: [{ kg: 20, reps: 10, done: false }, { kg: 20, reps: 10, done: false }]
-            });
-            loadPrescriptionRoutine(currentEditingRoutineObj.routineCode);
-        }
-
-        function removeExerciseFromPrescription(index) {
-            if (currentEditingRoutineObj) {
-                currentEditingRoutineObj.exercises.splice(index, 1);
-                loadPrescriptionRoutine(currentEditingRoutineObj.routineCode);
-            }
         }
 
         async function saveRoutinePrescription() {
             if (!currentEditingRoutineObj) return;
             await portalDB.put('fichas', currentEditingRoutineObj);
-            await refreshPortalUI();
-            showToast("Ficha de treino guardada com sucesso!");
+            showToast("Ficha guardada com sucesso!");
         }
 
-        /* =============================================================
-           8. GUARDA DE NOTAS E CRIAR NOVO ATLETA
-           ============================================================= */
         async function saveQuickNote() {
-            if (!activeStudentId) return;
             const text = document.getElementById('quick-trainer-note').value;
             await portalDB.put('notas', { studentId: activeStudentId, text });
-            document.getElementById('full-trainer-notes').value = text;
-            showToast("Anotação guardada com sucesso!");
+            showToast("Nota guardada!");
         }
 
         async function saveFullNotes() {
-            if (!activeStudentId) return;
             const text = document.getElementById('full-trainer-notes').value;
             await portalDB.put('notas', { studentId: activeStudentId, text });
-            document.getElementById('quick-trainer-note').value = text;
-            showToast("Prontuário técnico atualizado!");
+            showToast("Prontuário atualizado!");
         }
 
-        async function handleAddNewStudent(e) {
-            e.preventDefault();
-            const name = document.getElementById('new-student-name').value.trim();
-            const weight = parseFloat(document.getElementById('new-student-weight').value);
-            const fat = parseFloat(document.getElementById('new-student-fat').value) || null;
-
-            if (!name || isNaN(weight)) return;
-
-            const newId = `student_${Date.now()}`;
-            await portalDB.put('alunos', {
-                id: newId,
-                name: name,
-                streak: 1,
-                xp: 100,
-                level: 1,
-                completedWorkoutsMonth: 0
-            });
-
-            const today = new Date().toISOString().split('T')[0];
-            await portalDB.add('medidas', { studentId: newId, date: today, weight, fat });
-
-            closeModal('add-student-modal');
-            document.getElementById('form-add-student').reset();
-            await populateStudentDropdowns();
-            await changeStudent(newId);
-            showToast(`Perfil do atleta ${name} criado!`);
+        // =============================================================
+        // INTEGRAÇÃO COM GOOGLE DRIVE (LISTAR E SINCRONIZAR)
+        // =============================================================
+        function openSyncModal() {
+            openModal('sync-modal');
+            fetchDriveFilesList();
         }
 
-        async function handleMetricSubmit(e) {
-            e.preventDefault();
+        async function fetchDriveFilesList() {
+            const container = document.getElementById('drive-files-container');
+            container.innerHTML = `<p class="text-xs text-slate-400 text-center py-4"><i class="fa-solid fa-spinner fa-spin"></i> A procurar ficheiros no Google Drive...</p>`;
+
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=list`);
+                const result = await response.json();
+
+                if (result.status === "success" && result.files.length > 0) {
+                    container.innerHTML = '';
+                    result.files.forEach(file => {
+                        const item = document.createElement('div');
+                        item.className = "flex items-center justify-between p-3 bg-slate-800 rounded-xl border border-dark-border";
+                        item.innerHTML = `
+                            <div>
+                                <p class="text-xs font-bold text-white">${file.name}</p>
+                                <p class="text-[10px] text-slate-400">Atualizado: ${new Date(file.lastUpdated).toLocaleString()}</p>
+                            </div>
+                            <button onclick="importAthleteFromDrive('${file.id}', '${file.name}')" class="px-3 py-1.5 bg-brand-500 hover:bg-brand-600 text-black font-bold text-xs rounded-lg transition">
+                                Importar
+                            </button>
+                        `;
+                        container.appendChild(item);
+                    });
+                } else {
+                    container.innerHTML = `<p class="text-xs text-slate-500 text-center py-4">Nenhum ficheiro encontrado na pasta PMStudio_Atletas.</p>`;
+                }
+            } catch (error) {
+                container.innerHTML = `<p class="text-xs text-rose-400 text-center py-4">Erro ao ligar ao Google Drive.</p>`;
+            }
+        }
+
+        async function importAthleteFromDrive(fileId, fileName) {
+            showToast(`A descarregar ${fileName}...`);
+            try {
+                const response = await fetch(`${WEB_APP_URL}?action=read&fileId=${fileId}`);
+                const result = await response.json();
+
+                if (result.status === "success") {
+                    await processImportedData(result.data);
+                    closeModal('sync-modal');
+                    showToast(`Atleta ${result.fileName} importado com sucesso!`);
+                } else {
+                    showToast("Erro ao ler o ficheiro.");
+                }
+            } catch (err) {
+                showToast("Erro de comunicação com o Drive.");
+            }
+        }
+
+        async function syncActiveStudentToGoogleDrive() {
             if (!activeStudentId) return;
+            const student = await portalDB.get('alunos', activeStudentId);
+            const pesoData = await portalDB.getByIndex('medidas', 'studentId', activeStudentId);
+            const forcaData = await portalDB.getByIndex('forca', 'studentId', activeStudentId);
+            const notas = await portalDB.get('notas', activeStudentId);
 
-            const date = document.getElementById('input-metric-date').value;
-            const weight = parseFloat(document.getElementById('input-metric-weight').value);
-            const fat = parseFloat(document.getElementById('input-metric-fat').value) || null;
-            const arm = parseFloat(document.getElementById('input-metric-arm').value) || null;
-            const waist = parseFloat(document.getElementById('input-metric-waist').value) || null;
-            const chest = parseFloat(document.getElementById('input-metric-chest').value) || null;
-
-            await portalDB.add('medidas', { studentId: activeStudentId, date, weight, fat, arm, waist, chest });
-
-            closeModal('add-metric-modal');
-            document.getElementById('form-add-metric').reset();
-            document.getElementById('input-metric-date').value = new Date().toISOString().split('T')[0];
-            await refreshPortalUI();
-            showToast("Nova medida registada!");
-        }
-
-        /* =============================================================
-           9. PROCESSAMENTO DE IMPORTAÇÃO JSON DO ATLETA (PM STUDIO)
-           ============================================================= */
-        function handleJSONImport(event) {
-            const file = event.target.files[0];
-            if (!file) return;
-
-            const reader = new FileReader();
-            reader.onload = async function(e) {
-                try {
-                    const data = JSON.parse(e.target.result);
-                    await processImportedData(data);
-                } catch (err) {
-                    showToast("⚠️ Ficheiro JSON inválido!");
+            const payloadData = {
+                athleteName: student.name,
+                payload: {
+                    profile: student,
+                    peso: pesoData,
+                    forca: forcaData,
+                    notas: notas ? notas.text : "",
+                    lastSync: new Date().toISOString()
                 }
             };
-            reader.readAsText(file);
-        }
 
-        async function handlePastedJSONImport() {
-            const text = document.getElementById('json-paste-area').value;
-            if (!text.trim()) return;
+            showToast("A sincronizar com o Google Drive...");
             try {
-                const data = JSON.parse(text);
-                await processImportedData(data);
+                await fetch(WEB_APP_URL, {
+                    method: 'POST',
+                    mode: 'no-cors',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payloadData)
+                });
+                showToast(`Dados de ${student.name} sincronizados no Drive!`);
             } catch (err) {
-                showToast("⚠️ Formato JSON inválido!");
+                showToast("Erro ao sincronizar com o Drive.");
             }
         }
 
         async function processImportedData(data) {
-            const profileObj = data.perfil || data.profile || (data.name ? data : null);
-
-            if (!profileObj || (!profileObj.name && !data.name)) {
-                showToast("⚠️ JSON não contém um perfil válido de atleta.");
-                return;
-            }
-
-            const targetStudentId = `student_${Date.now()}`;
-            const studentName = profileObj.name || data.name || "Atleta Importado";
-            
+            const profile = data.profile || data;
+            const targetId = `student_${Date.now()}`;
             await portalDB.put('alunos', {
-                id: targetStudentId,
-                name: studentName,
-                streak: profileObj.streak || 0,
-                xp: profileObj.xp || 0,
-                level: profileObj.level || 1,
-                completedWorkoutsMonth: profileObj.completedWorkoutsMonth || 0
+                id: targetId,
+                name: profile.name || "Atleta",
+                streak: profile.streak || 0,
+                xp: profile.xp || 0,
+                level: profile.level || 1,
+                completedWorkoutsMonth: profile.completedWorkoutsMonth || 0
             });
 
-            const pesoArray = data.peso || data.weights || [];
-            if (Array.isArray(pesoArray)) {
-                for (const p of pesoArray) {
-                    await portalDB.add('medidas', {
-                        studentId: targetStudentId,
-                        date: p.date || new Date().toISOString().split('T')[0],
-                        weight: parseFloat(p.weight) || 0,
-                        fat: p.fat ? parseFloat(p.fat) : null,
-                        arm: p.arm ? parseFloat(p.arm) : null,
-                        waist: p.waist ? parseFloat(p.waist) : null,
-                        chest: p.chest ? parseFloat(p.chest) : null
-                    });
+            if (data.peso) {
+                for (const p of data.peso) {
+                    await portalDB.add('medidas', { studentId: targetId, date: p.date, weight: p.weight, fat: p.fat, arm: p.arm, waist: p.waist, chest: p.chest });
                 }
             }
 
-            const forcaArray = data.forca || data.strength || [];
-            if (Array.isArray(forcaArray)) {
-                for (const f of forcaArray) {
-                    await portalDB.add('forca', {
-                        studentId: targetStudentId,
-                        exercise: f.exercise,
-                        date: f.date,
-                        load: parseFloat(f.load)
-                    });
-                }
-            }
-
-            const treinosArray = data.treinos || data.workouts || [];
-            if (Array.isArray(treinosArray)) {
-                for (const t of treinosArray) {
-                    await portalDB.put('fichas', {
-                        key: `${targetStudentId}_${t.routineCode || 'A'}`,
-                        studentId: targetStudentId,
-                        routineCode: t.routineCode || 'A',
-                        title: t.title || "Treino Prescrito",
-                        exercises: t.exercises || []
-                    });
-                }
-            }
-
-            closeModal('sync-modal');
-            document.getElementById('json-paste-area').value = '';
             await populateStudentDropdowns();
-            await changeStudent(targetStudentId);
-            showToast(`Dados do atleta ${studentName} importados com sucesso!`);
+            await changeStudent(targetId);
         }
 
-        /* =============================================================
-           10. UTILITÁRIOS DE NAVEGAÇÃO E MODAIS
-           ============================================================= */
         function switchTab(tabId) {
             document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
             document.querySelectorAll('.nav-btn, .mobile-nav-btn').forEach(btn => {
-                if (btn.getAttribute('data-tab') === tabId) {
-                    btn.classList.add('text-brand-400', 'font-bold');
-                } else {
-                    btn.classList.remove('text-brand-400', 'font-bold');
-                }
+                if (btn.getAttribute('data-tab') === tabId) btn.classList.add('text-brand-400', 'font-bold');
+                else btn.classList.remove('text-brand-400', 'font-bold');
             });
-
-            const selectedTab = document.getElementById(`tab-${tabId}`);
-            if (selectedTab) selectedTab.classList.add('active');
-
-            if (tabId === 'metrics') renderCharts();
-            if (tabId === 'workouts') renderPTRoutine(currentPTRoutineTab);
+            document.getElementById(`tab-${tabId}`).classList.add('active');
         }
 
-        function openModal(id) {
-            document.getElementById(id).classList.remove('hidden');
-        }
-
-        function closeModal(id) {
-            document.getElementById(id).classList.add('hidden');
-        }
-
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
         function showToast(msg) {
             const toast = document.getElementById('toast-notification');
             document.getElementById('toast-message').innerText = msg;
             toast.classList.remove('translate-y-32');
-            setTimeout(() => {
-                toast.classList.add('translate-y-32');
-            }, 3000);
+            setTimeout(() => toast.classList.add('translate-y-32'), 3000);
         }
 
-        /* =============================================================
-           11. INICIALIZAÇÃO DA APLICAÇÃO
-           ============================================================= */
         window.onload = async function() {
-            try {
-                await portalDB.init();
-                await setupInitialDataIfEmpty();
-
-                document.getElementById('input-metric-date').value = new Date().toISOString().split('T')[0];
-
-                await populateStudentDropdowns();
-                const alunos = await portalDB.getAll('alunos');
-                if (alunos.length > 0) {
-                    activeStudentId = alunos[0].id;
-                }
+            await portalDB.init();
+            await populateStudentDropdowns();
+            const alunos = await portalDB.getAll('alunos');
+            if (alunos.length > 0) {
+                activeStudentId = alunos[0].id;
                 await refreshPortalUI();
-            } catch (err) {
-                console.error("Erro na inicialização do Portal:", err);
             }
         };
     </script>
