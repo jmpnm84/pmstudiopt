@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PM Studio PRO - Portal Personal Trainer</title>
+    <title>PM Studio - Portal Personal Trainer</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
@@ -98,10 +98,10 @@
                 </div>
             </div>
 
-            <!-- Seletor de Alunos na Sidebar -->
+            <!-- Seletor de Atletas na Sidebar -->
             <div class="mb-6 bg-slate-900/80 p-3 rounded-2xl border border-dark-border">
                 <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-                    <i class="fa-solid fa-users text-brand-500"></i> Aluno Selecionado
+                    <i class="fa-solid fa-users text-brand-500"></i> Atleta Selecionado
                 </label>
                 <select id="sidebar-student-select" onchange="changeStudent(this.value)" class="w-full bg-slate-800 text-xs text-white border border-dark-border rounded-xl p-2.5 outline-none focus:border-brand-500 font-semibold cursor-pointer">
                     <!-- Preenchido via JS -->
@@ -148,10 +148,10 @@
                     <p class="text-xs text-brand-accent flex items-center gap-1">
                         <i class="fa-solid fa-circle text-[8px] text-emerald-400"></i> Portal Ativo
                     </p>
-                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">v1.0.0 PT-PRO</p>
+                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">v0.1.2</p>
                 </div>
             </div>
-            <button onclick="openModal('sync-modal')" title="Importar JSON do Aluno" class="p-2 bg-slate-800 hover:bg-slate-700 text-brand-400 rounded-xl transition border border-dark-border">
+            <button onclick="openModal('sync-modal')" title="Importar JSON do Atleta" class="p-2 bg-slate-800 hover:bg-slate-700 text-brand-400 rounded-xl transition border border-dark-border">
                 <i class="fa-solid fa-file-import"></i>
             </button>
         </div>
@@ -174,7 +174,7 @@
             </div>
         </div>
 
-        <!-- Seletor de Aluno Mobile -->
+        <!-- Seletor de Atleta Mobile -->
         <div>
             <select id="mobile-student-select" onchange="changeStudent(this.value)" class="w-full bg-slate-800 text-xs text-white border border-dark-border rounded-xl p-2.5 outline-none focus:border-brand-500 font-semibold">
                 <!-- Preenchido via JS -->
@@ -185,7 +185,7 @@
     <!-- CONTEÚDO PRINCIPAL -->
     <main class="flex-1 p-4 md:p-8 max-w-7xl mx-auto w-full overflow-x-hidden">
 
-        <!-- Banner do Aluno Ativo -->
+        <!-- Banner do Atleta Ativo -->
         <div class="bg-gradient-to-r from-dark-card via-slate-900 to-dark-card p-5 md:p-6 rounded-2xl border border-dark-border mb-6 flex flex-col md:flex-row items-start md:items-center justify-between gap-4 shadow-xl">
             <div class="flex items-center space-x-4">
                 <div id="student-avatar-large" class="w-14 h-14 rounded-2xl bg-brand-500 text-black font-extrabold text-xl flex items-center justify-center shadow-lg neon-glow shrink-0">
@@ -193,7 +193,7 @@
                 </div>
                 <div>
                     <div class="flex items-center gap-2">
-                        <h2 id="student-name-display" class="text-2xl font-black text-white">A Carregar Aluno...</h2>
+                        <h2 id="student-name-display" class="text-2xl font-black text-white">A Carregar Atleta...</h2>
                         <span id="student-level-badge" class="px-2.5 py-0.5 bg-brand-500/20 text-brand-400 text-xs font-bold rounded-full border border-brand-500/30">Nível 1</span>
                     </div>
                     <p class="text-slate-400 text-xs mt-1 flex items-center gap-3 flex-wrap">
@@ -206,9 +206,12 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-2 w-full md:w-auto justify-end">
+            <div class="flex items-center gap-2 w-full md:w-auto justify-end flex-wrap">
                 <button onclick="openModal('add-student-modal')" class="px-4 py-2.5 bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-bold rounded-xl border border-dark-border transition flex items-center gap-2">
-                    <i class="fa-solid fa-user-plus text-brand-500"></i> Novo Aluno
+                    <i class="fa-solid fa-user-plus text-brand-500"></i> Novo Atleta
+                </button>
+                <button onclick="deleteActiveStudent()" class="px-3 py-2.5 bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold rounded-xl border border-rose-500/30 transition flex items-center gap-1.5" title="Eliminar Atleta Ativo">
+                    <i class="fa-solid fa-trash-can"></i> Eliminar
                 </button>
                 <button onclick="openModal('sync-modal')" class="px-4 py-2.5 bg-brand-500 hover:bg-brand-600 text-black text-xs font-extrabold rounded-xl transition neon-glow flex items-center gap-2">
                     <i class="fa-solid fa-file-import"></i> Importar Dados JSON
@@ -218,7 +221,7 @@
 
         <!-- 1. DASHBOARD / VISÃO GERAL DO ATLETA -->
         <section id="tab-dashboard" class="tab-content active space-y-6">
-            <!-- Métricas Rápidas do Aluno -->
+            <!-- Métricas Rápidas do Atleta -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                 <div class="bg-dark-card p-4 rounded-2xl border border-dark-border">
                     <div class="flex items-center justify-between text-slate-400 text-xs mb-2">
@@ -291,7 +294,7 @@
                 </div>
             </div>
 
-            <!-- Badges e Conquistas do Aluno -->
+            <!-- Badges e Conquistas do Atleta -->
             <div class="bg-dark-card p-6 rounded-2xl border border-dark-border">
                 <h3 class="font-bold text-lg text-white mb-4 flex items-center gap-2">
                     <i class="fa-solid fa-trophy text-amber-400"></i> Desafios & Conquistas Desbloqueadas
@@ -373,11 +376,11 @@
             </div>
         </section>
 
-        <!-- 3. FICHAS E DIÁRIO DE TREINOS DO ALUNO -->
+        <!-- 3. FICHAS E DIÁRIO DE TREINOS DO ATLETA -->
         <section id="tab-workouts" class="tab-content space-y-6">
             <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
                 <div>
-                    <h2 class="text-2xl font-bold text-white">Diário de Treino & Registos do Aluno</h2>
+                    <h2 class="text-2xl font-bold text-white">Diário de Treino & Registos do Atleta</h2>
                     <p class="text-slate-400 text-sm">Inspecione os volumes, séries executadas e cargas efetuadas pelo atleta.</p>
                 </div>
 
@@ -431,7 +434,7 @@
             </div>
         </section>
 
-        <!-- 5. NUTRIÇÃO E HÁBITOS DO ALUNO -->
+        <!-- 5. NUTRIÇÃO E HÁBITOS DO ATLETA -->
         <section id="tab-nutrition" class="tab-content space-y-6">
             <div>
                 <h2 class="text-2xl font-bold text-white">Acompanhamento Nutricional</h2>
@@ -515,7 +518,7 @@
             </div>
         </section>
 
-        <!-- 6. NOTAS E OBSERVACÕES PRIVADAS -->
+        <!-- 6. NOTAS E OBSERVAÇÕES PRIVADAS -->
         <section id="tab-notes" class="tab-content space-y-6">
             <div>
                 <h2 class="text-2xl font-bold text-white">Anotações Clínicas & Técnicas</h2>
@@ -523,8 +526,8 @@
             </div>
 
             <div class="bg-dark-card p-6 rounded-2xl border border-dark-border space-y-4">
-                <label class="block text-sm font-bold text-slate-200">Prontuário Técnico do Aluno</label>
-                <textarea id="full-trainer-notes" rows="12" placeholder="Exemplo: Aluno relata desconforto no ombro direito durante o supino acima de 75kg. Reforçar trabalho de manguito rotador e estabilização de escápulas..." class="w-full bg-slate-800 text-sm text-white p-4 rounded-xl border border-dark-border outline-none focus:border-brand-500 custom-scrollbar resize-y"></textarea>
+                <label class="block text-sm font-bold text-slate-200">Prontuário Técnico do Atleta</label>
+                <textarea id="full-trainer-notes" rows="12" placeholder="Exemplo: Atleta relata desconforto no ombro direito durante o supino acima de 75kg. Reforçar trabalho de manguito rotador e estabilização de escápulas..." class="w-full bg-slate-800 text-sm text-white p-4 rounded-xl border border-dark-border outline-none focus:border-brand-500 custom-scrollbar resize-y"></textarea>
                 
                 <div class="flex justify-between items-center pt-2">
                     <span class="text-xs text-slate-500">Guardado localmente no PTPortalDB</span>
@@ -561,7 +564,7 @@
         </button>
     </nav>
 
-    <!-- MODAL IMPORTAÇÃO / SINCRONIZAÇÃO JSON DE ALUNOS DO PM STUDIO -->
+    <!-- MODAL IMPORTAÇÃO / SINCRONIZAÇÃO JSON DE ATLETAS DO PM STUDIO -->
     <div id="sync-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-dark-card border border-brand-500/30 p-6 rounded-2xl w-full max-w-lg space-y-5 relative shadow-2xl">
             <button onclick="closeModal('sync-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
@@ -572,7 +575,7 @@
                     <i class="fa-solid fa-file-import"></i>
                 </div>
                 <div>
-                    <h3 class="text-xl font-bold text-white">Importar Dados do Aluno (JSON)</h3>
+                    <h3 class="text-xl font-bold text-white">Importar Dados do Atleta (JSON)</h3>
                     <p class="text-xs text-slate-400">Carregue o ficheiro ou estrutura de exportação do PM Studio App.</p>
                 </div>
             </div>
@@ -580,7 +583,7 @@
             <div class="space-y-4">
                 <div class="p-4 border-2 border-dashed border-slate-700 hover:border-brand-500 rounded-2xl text-center bg-slate-800/40 cursor-pointer transition" onclick="document.getElementById('file-input-json').click()">
                     <i class="fa-solid fa-cloud-arrow-up text-3xl text-brand-400 mb-2"></i>
-                    <p class="text-xs font-semibold text-white">Clique para carregar o ficheiro .JSON do Aluno</p>
+                    <p class="text-xs font-semibold text-white">Clique para carregar o ficheiro .JSON do Atleta</p>
                     <p class="text-[10px] text-slate-500 mt-1">Compatível com o formato IndexedDB de exportação</p>
                     <input type="file" id="file-input-json" accept=".json" class="hidden" onchange="handleJSONImport(event)">
                 </div>
@@ -590,19 +593,19 @@
                 <textarea id="json-paste-area" rows="4" placeholder='{"perfil": {...}, "peso": [...]}' class="w-full bg-slate-800 text-xs text-slate-300 p-3 rounded-xl border border-dark-border outline-none focus:border-brand-500 font-mono resize-none"></textarea>
 
                 <button onclick="handlePastedJSONImport()" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-black font-extrabold rounded-xl text-xs transition neon-glow">
-                    Processar e Importar Aluno
+                    Processar e Importar Atleta
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- MODAL ADICIONAR NOVO ALUNO -->
+    <!-- MODAL ADICIONAR NOVO ATLETA -->
     <div id="add-student-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-dark-card border border-dark-border p-6 rounded-2xl w-full max-w-md space-y-4 relative shadow-2xl">
             <button onclick="closeModal('add-student-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
-            <h3 class="text-xl font-bold text-white">Registar Novo Aluno</h3>
+            <h3 class="text-xl font-bold text-white">Registar Novo Atleta</h3>
             
             <form id="form-add-student" onsubmit="handleAddNewStudent(event)" class="space-y-3">
                 <div>
@@ -632,7 +635,7 @@
             <button onclick="closeModal('add-metric-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
-            <h3 class="text-xl font-bold text-white">Registar Medida do Aluno</h3>
+            <h3 class="text-xl font-bold text-white">Registar Medida do Atleta</h3>
             
             <form id="form-add-metric" onsubmit="handleMetricSubmit(event)" class="space-y-3">
                 <div>
@@ -767,6 +770,16 @@
                 });
             }
 
+            async delete(storeName, key) {
+                return new Promise((resolve, reject) => {
+                    const tx = this.db.transaction(storeName, 'readwrite');
+                    const store = tx.objectStore(storeName);
+                    const req = store.delete(key);
+                    req.onsuccess = () => resolve(req.result);
+                    req.onerror = () => reject(req.error);
+                });
+            }
+
             async getByIndex(storeName, indexName, value) {
                 return new Promise((resolve, reject) => {
                     const tx = this.db.transaction(storeName, 'readonly');
@@ -879,6 +892,19 @@
             sideSelect.innerHTML = '';
             mobSelect.innerHTML = '';
 
+            if (alunos.length === 0) {
+                const optNone = document.createElement('option');
+                optNone.value = '';
+                optNone.innerText = 'Nenhum atleta registado';
+                sideSelect.appendChild(optNone);
+
+                const optNoneMob = document.createElement('option');
+                optNoneMob.value = '';
+                optNoneMob.innerText = 'Nenhum atleta registado';
+                mobSelect.appendChild(optNoneMob);
+                return;
+            }
+
             alunos.forEach(a => {
                 const opt1 = document.createElement('option');
                 opt1.value = a.id;
@@ -895,6 +921,7 @@
         }
 
         async function changeStudent(studentId) {
+            if (!studentId) return;
             activeStudentId = studentId;
             document.getElementById('sidebar-student-select').value = studentId;
             document.getElementById('mobile-student-select').value = studentId;
@@ -902,7 +929,60 @@
             await refreshPortalUI();
         }
 
+        async function deleteActiveStudent() {
+            if (!activeStudentId) {
+                showToast("Nenhum atleta selecionado para eliminar.");
+                return;
+            }
+
+            const student = await portalDB.get('alunos', activeStudentId);
+            const studentName = student ? student.name : "este atleta";
+
+            if (!confirm(`Tem a certeza de que deseja eliminar o atleta "${studentName}"? Esta ação removerá o perfil e todo o seu histórico.`)) {
+                return;
+            }
+
+            // Eliminar da tabela principal
+            await portalDB.delete('alunos', activeStudentId);
+
+            // Limpar medidas, força, fichas, nutrição e notas associadas
+            const medidas = await portalDB.getByIndex('medidas', 'studentId', activeStudentId);
+            for (const m of medidas) {
+                if (m.id) await portalDB.delete('medidas', m.id);
+            }
+
+            const forcaData = await portalDB.getByIndex('forca', 'studentId', activeStudentId);
+            for (const f of forcaData) {
+                if (f.id) await portalDB.delete('forca', f.id);
+            }
+
+            ['A', 'B', 'C'].forEach(async (code) => {
+                await portalDB.delete('fichas', `${activeStudentId}_${code}`);
+            });
+
+            await portalDB.delete('notas', activeStudentId);
+
+            showToast(`Atleta ${studentName} eliminado com sucesso.`);
+
+            const remainingStudents = await portalDB.getAll('alunos');
+            if (remainingStudents.length > 0) {
+                activeStudentId = remainingStudents[0].id;
+                await populateStudentDropdowns();
+                await refreshPortalUI();
+            } else {
+                activeStudentId = null;
+                await populateStudentDropdowns();
+                document.getElementById('student-name-display').innerText = "Sem Atletas";
+                document.getElementById('student-avatar-large').innerText = "--";
+                document.getElementById('dash-routine-summary').innerHTML = '<p class="text-xs text-slate-500 py-2">Sem atletas registados.</p>';
+                document.getElementById('pt-metrics-table-body').innerHTML = '';
+                document.getElementById('pt-workout-routine-container').innerHTML = '';
+            }
+        }
+
         async function refreshPortalUI() {
+            if (!activeStudentId) return;
+
             const student = await portalDB.get('alunos', activeStudentId);
             if (!student) return;
 
@@ -963,9 +1043,11 @@
             const container = document.getElementById('dash-routine-summary');
             container.innerHTML = '';
 
+            if (!activeStudentId) return;
+
             const ficha = await portalDB.get('fichas', `${activeStudentId}_A`);
             if (!ficha || !ficha.exercises) {
-                container.innerHTML = `<p class="text-xs text-slate-500 py-2">Sem ficha ativa configurada para o aluno.</p>`;
+                container.innerHTML = `<p class="text-xs text-slate-500 py-2">Sem ficha ativa configurada para o atleta.</p>`;
                 return;
             }
 
@@ -1018,6 +1100,8 @@
            5. GRÁFICOS CHART.JS
            ============================================================= */
         async function renderCharts() {
+            if (!activeStudentId) return;
+
             const medidas = await portalDB.getByIndex('medidas', 'studentId', activeStudentId);
             medidas.sort((a, b) => new Date(a.date) - new Date(b.date));
 
@@ -1117,6 +1201,8 @@
         }
 
         async function renderPTRoutine(code) {
+            if (!activeStudentId) return;
+
             const ficha = await portalDB.get('fichas', `${activeStudentId}_${code}`);
             const container = document.getElementById('pt-workout-routine-container');
             container.innerHTML = '';
@@ -1163,6 +1249,8 @@
         let currentEditingRoutineObj = null;
 
         async function loadPrescriptionRoutine(code) {
+            if (!activeStudentId) return;
+
             let ficha = await portalDB.get('fichas', `${activeStudentId}_${code}`);
             if (!ficha) {
                 ficha = {
@@ -1250,9 +1338,10 @@
         }
 
         /* =============================================================
-           8. GUARDA DE NOTAS E CRIAR NOVO ALUNO
+           8. GUARDA DE NOTAS E CRIAR NOVO ATLETA
            ============================================================= */
         async function saveQuickNote() {
+            if (!activeStudentId) return;
             const text = document.getElementById('quick-trainer-note').value;
             await portalDB.put('notas', { studentId: activeStudentId, text });
             document.getElementById('full-trainer-notes').value = text;
@@ -1260,6 +1349,7 @@
         }
 
         async function saveFullNotes() {
+            if (!activeStudentId) return;
             const text = document.getElementById('full-trainer-notes').value;
             await portalDB.put('notas', { studentId: activeStudentId, text });
             document.getElementById('quick-trainer-note').value = text;
@@ -1290,11 +1380,13 @@
             closeModal('add-student-modal');
             await populateStudentDropdowns();
             await changeStudent(newId);
-            showToast(`Perfil do aluno ${name} criado!`);
+            showToast(`Perfil do atleta ${name} criado!`);
         }
 
         async function handleMetricSubmit(e) {
             e.preventDefault();
+            if (!activeStudentId) return;
+
             const date = document.getElementById('input-metric-date').value;
             const weight = parseFloat(document.getElementById('input-metric-weight').value);
             const fat = parseFloat(document.getElementById('input-metric-fat').value) || null;
@@ -1344,12 +1436,12 @@
             const profileObj = data.perfil || data.profile || (data.name ? data : null);
 
             if (!profileObj || (!profileObj.name && !data.name)) {
-                showToast("⚠️ JSON não contém um perfil válido de aluno.");
+                showToast("⚠️ JSON não contém um perfil válido de atleta.");
                 return;
             }
 
             const targetStudentId = `student_${Date.now()}`;
-            const studentName = profileObj.name || data.name || "Aluno Importado";
+            const studentName = profileObj.name || data.name || "Atleta Importado";
             
             await portalDB.put('alunos', {
                 id: targetStudentId,
@@ -1406,7 +1498,7 @@
             closeModal('sync-modal');
             await populateStudentDropdowns();
             await changeStudent(targetStudentId);
-            showToast(`Dados do aluno ${studentName} importados com sucesso!`);
+            showToast(`Dados do atleta ${studentName} importados com sucesso!`);
         }
 
         /* =============================================================
