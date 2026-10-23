@@ -797,81 +797,14 @@
         /* =============================================================
            2. ESTADO E CARREGAMENTO INICIAL DE DEMO
            ============================================================= */
-        let activeStudentId = 'student_1';
+        let activeStudentId = null;
         let weightChartInstance = null;
         let strengthChartInstance = null;
         let currentPTRoutineTab = 'A';
 
         async function setupInitialDataIfEmpty() {
-            const alunos = await portalDB.getAll('alunos');
-            if (alunos.length === 0) {
-                await portalDB.put('alunos', {
-                    id: 'student_1',
-                    name: 'João Silva',
-                    streak: 12,
-                    xp: 450,
-                    level: 2,
-                    completedWorkoutsMonth: 14
-                });
-
-                await portalDB.put('alunos', {
-                    id: 'student_2',
-                    name: 'Ana Pereira',
-                    streak: 5,
-                    xp: 200,
-                    level: 1,
-                    completedWorkoutsMonth: 8
-                });
-
-                const today = new Date().toISOString().split('T')[0];
-
-                await portalDB.add('medidas', { studentId: 'student_1', date: '2026-10-01', weight: 81.0, fat: 18.0, arm: 37, waist: 84, chest: 100 });
-                await portalDB.add('medidas', { studentId: 'student_1', date: '2026-10-15', weight: 79.5, fat: 17.2, arm: 37.5, waist: 82.5, chest: 101 });
-                await portalDB.add('medidas', { studentId: 'student_1', date: today, weight: 78.8, fat: 16.5, arm: 38, waist: 81, chest: 102 });
-
-                await portalDB.add('forca', { studentId: 'student_1', exercise: 'Supino Reto com Barra', date: '2026-10-01', load: 60 });
-                await portalDB.add('forca', { studentId: 'student_1', exercise: 'Supino Reto com Barra', date: '2026-10-15', load: 70 });
-                await portalDB.add('forca', { studentId: 'student_1', exercise: 'Supino Reto com Barra', date: today, load: 75 });
-
-                await portalDB.put('fichas', {
-                    key: 'student_1_A',
-                    studentId: 'student_1',
-                    routineCode: 'A',
-                    title: "Treino A - Peito & Tríceps",
-                    exercises: [
-                        { name: "Supino Reto com Barra", sets: [{kg: 75, reps: 8, done: true}, {kg: 75, reps: 8, done: true}, {kg: 75, reps: 6, done: true}] },
-                        { name: "Supino Inclinado c/ Halteres", sets: [{kg: 24, reps: 10, done: true}, {kg: 24, reps: 10, done: true}] },
-                        { name: "Tríceps na Polia Alta", sets: [{kg: 35, reps: 12, done: true}, {kg: 35, reps: 12, done: true}] }
-                    ]
-                });
-
-                await portalDB.put('fichas', {
-                    key: 'student_1_B',
-                    studentId: 'student_1',
-                    routineCode: 'B',
-                    title: "Treino B - Costas & Bíceps",
-                    exercises: [
-                        { name: "Puxada à Frente na Polia", sets: [{kg: 50, reps: 10, done: false}, {kg: 55, reps: 8, done: false}] },
-                        { name: "Remada Curvada com Barra", sets: [{kg: 40, reps: 10, done: false}, {kg: 45, reps: 10, done: false}] }
-                    ]
-                });
-
-                await portalDB.put('nutricao', {
-                    key: `student_1_${today}`,
-                    studentId: 'student_1',
-                    date: today,
-                    water: 2.5,
-                    cals: 2150,
-                    prot: 165,
-                    carbs: 210,
-                    fat: 55
-                });
-
-                await portalDB.put('notas', {
-                    studentId: 'student_1',
-                    text: 'Excelente evolução técnica no supino. Focar na estabilização dos ombros no supino inclinado.'
-                });
-            }
+            // Nenhuma inserção predefinida de João Silva ou Ana Pereira.
+            // Os dados começam vazios para que novos atletas sejam registados ou importados.
         }
 
         /* =============================================================
@@ -903,6 +836,11 @@
                 optNoneMob.innerText = 'Nenhum atleta registado';
                 mobSelect.appendChild(optNoneMob);
                 return;
+            }
+
+            // Se activeStudentId não estiver definido mas existirem alunos, define o primeiro
+            if (!activeStudentId && alunos.length > 0) {
+                activeStudentId = alunos[0].id;
             }
 
             alunos.forEach(a => {
@@ -981,7 +919,34 @@
         }
 
         async function refreshPortalUI() {
-            if (!activeStudentId) return;
+            if (!activeStudentId) {
+                document.getElementById('student-name-display').innerText = "Sem Atletas";
+                document.getElementById('student-avatar-large').innerText = "--";
+                document.getElementById('student-level-badge').innerText = "Nível 1";
+                document.getElementById('student-streak-display').innerText = "0";
+                document.getElementById('student-xp-display').innerText = "0";
+                document.getElementById('student-workouts-display').innerText = "0";
+                document.getElementById('dash-weight').innerText = "--";
+                document.getElementById('dash-fat').innerText = "--";
+                document.getElementById('dash-cals').innerText = "0";
+                document.getElementById('dash-water').innerText = "0.0";
+                document.getElementById('pt-cals-ingested').innerText = "0";
+                document.getElementById('pt-cals-bar').style.width = "0%";
+                document.getElementById('pt-prot-ingested').innerText = "0";
+                document.getElementById('pt-prot-bar').style.width = "0%";
+                document.getElementById('pt-carbs-ingested').innerText = "0";
+                document.getElementById('pt-carbs-bar').style.width = "0%";
+                document.getElementById('pt-fat-ingested').innerText = "0";
+                document.getElementById('pt-fat-bar').style.width = "0%";
+                document.getElementById('pt-water-val').innerText = "0.0";
+                document.getElementById('pt-water-cups').innerText = "0";
+                document.getElementById('quick-trainer-note').value = "";
+                document.getElementById('full-trainer-notes').value = "";
+                document.getElementById('dash-routine-summary').innerHTML = `<p class="text-xs text-slate-500 py-2">Sem ficha ativa configurada para o atleta.</p>`;
+                document.getElementById('pt-metrics-table-body').innerHTML = '';
+                document.getElementById('pt-workout-routine-container').innerHTML = `<p class="text-xs text-slate-500 py-4">Sem exercícios prescritos.</p>`;
+                return;
+            }
 
             const student = await portalDB.get('alunos', activeStudentId);
             if (!student) return;
@@ -1100,21 +1065,26 @@
            5. GRÁFICOS CHART.JS
            ============================================================= */
         async function renderCharts() {
-            if (!activeStudentId) return;
-
-            const medidas = await portalDB.getByIndex('medidas', 'studentId', activeStudentId);
-            medidas.sort((a, b) => new Date(a.date) - new Date(b.date));
-
             const ctxWeight = document.getElementById('ptWeightChart').getContext('2d');
             if (weightChartInstance) weightChartInstance.destroy();
+
+            let weightLabels = [];
+            let weightData = [];
+
+            if (activeStudentId) {
+                const medidas = await portalDB.getByIndex('medidas', 'studentId', activeStudentId);
+                medidas.sort((a, b) => new Date(a.date) - new Date(b.date));
+                weightLabels = medidas.map(m => m.date);
+                weightData = medidas.map(m => m.weight);
+            }
 
             weightChartInstance = new Chart(ctxWeight, {
                 type: 'line',
                 data: {
-                    labels: medidas.map(m => m.date),
+                    labels: weightLabels,
                     datasets: [{
                         label: 'Peso (kg)',
-                        data: medidas.map(m => m.weight),
+                        data: weightData,
                         borderColor: '#ccff00',
                         backgroundColor: 'rgba(204, 255, 0, 0.1)',
                         borderWidth: 3,
@@ -1136,9 +1106,16 @@
             });
 
             const selectedEx = document.getElementById('pt-exercise-chart-select').value;
-            const forcaData = await portalDB.getByIndex('forca', 'studentId', activeStudentId);
-            const filtered = forcaData.filter(f => f.exercise === selectedEx);
-            filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+            let strengthLabels = [];
+            let strengthData = [];
+
+            if (activeStudentId) {
+                const forcaData = await portalDB.getByIndex('forca', 'studentId', activeStudentId);
+                const filtered = forcaData.filter(f => f.exercise === selectedEx);
+                filtered.sort((a, b) => new Date(a.date) - new Date(b.date));
+                strengthLabels = filtered.map(d => d.date);
+                strengthData = filtered.map(d => d.load);
+            }
 
             const ctxStrength = document.getElementById('ptStrengthChart').getContext('2d');
             if (strengthChartInstance) strengthChartInstance.destroy();
@@ -1146,10 +1123,10 @@
             strengthChartInstance = new Chart(ctxStrength, {
                 type: 'bar',
                 data: {
-                    labels: filtered.map(d => d.date),
+                    labels: strengthLabels,
                     datasets: [{
                         label: 'Carga (kg)',
-                        data: filtered.map(d => d.load),
+                        data: strengthData,
                         backgroundColor: '#00f0ff',
                         borderRadius: 8
                     }]
@@ -1249,7 +1226,10 @@
         let currentEditingRoutineObj = null;
 
         async function loadPrescriptionRoutine(code) {
-            if (!activeStudentId) return;
+            if (!activeStudentId) {
+                document.getElementById('prescription-exercises-list').innerHTML = `<p class="text-xs text-slate-500 py-2">Selecione ou crie um atleta para prescrever treinos.</p>`;
+                return;
+            }
 
             let ficha = await portalDB.get('fichas', `${activeStudentId}_${code}`);
             if (!ficha) {
@@ -1294,30 +1274,49 @@
         }
 
         function updatePrescriptionExName(exIndex, name) {
-            currentEditingRoutineObj.exercises[exIndex].name = name;
+            if (currentEditingRoutineObj && currentEditingRoutineObj.exercises[exIndex]) {
+                currentEditingRoutineObj.exercises[exIndex].name = name;
+            }
         }
 
         function updatePrescriptionExDefaultKg(exIndex, kg) {
-            const num = parseFloat(kg) || 0;
-            currentEditingRoutineObj.exercises[exIndex].sets.forEach(s => s.kg = num);
+            if (currentEditingRoutineObj && currentEditingRoutineObj.exercises[exIndex]) {
+                const num = parseFloat(kg) || 0;
+                currentEditingRoutineObj.exercises[exIndex].sets.forEach(s => s.kg = num);
+            }
         }
 
         function updatePrescriptionExSetsCount(exIndex, count) {
-            const target = parseInt(count) || 1;
-            const currentSets = currentEditingRoutineObj.exercises[exIndex].sets;
-            const baseKg = currentSets[0] ? currentSets[0].kg : 0;
+            if (currentEditingRoutineObj && currentEditingRoutineObj.exercises[exIndex]) {
+                const target = parseInt(count) || 1;
+                const currentSets = currentEditingRoutineObj.exercises[exIndex].sets;
+                const baseKg = currentSets[0] ? currentSets[0].kg : 0;
 
-            if (target > currentSets.length) {
-                while (currentSets.length < target) {
-                    currentSets.push({ kg: baseKg, reps: 10, done: false });
+                if (target > currentSets.length) {
+                    while (currentSets.length < target) {
+                        currentSets.push({ kg: baseKg, reps: 10, done: false });
+                    }
+                } else if (target < currentSets.length && target > 0) {
+                    currentSets.splice(target);
                 }
-            } else if (target < currentSets.length && target > 0) {
-                currentSets.splice(target);
             }
         }
 
         function addExerciseToPrescription() {
-            if (!currentEditingRoutineObj) return;
+            if (!activeStudentId) {
+                showToast("Selecione ou crie um atleta primeiro.");
+                return;
+            }
+            if (!currentEditingRoutineObj) {
+                const code = document.getElementById('prescribe-routine-select').value;
+                currentEditingRoutineObj = {
+                    key: `${activeStudentId}_${code}`,
+                    studentId: activeStudentId,
+                    routineCode: code,
+                    title: `Treino ${code}`,
+                    exercises: []
+                };
+            }
             currentEditingRoutineObj.exercises.push({
                 name: "Novo Exercício Prescrito",
                 sets: [{ kg: 20, reps: 10, done: false }, { kg: 20, reps: 10, done: false }]
@@ -1326,8 +1325,10 @@
         }
 
         function removeExerciseFromPrescription(index) {
-            currentEditingRoutineObj.exercises.splice(index, 1);
-            loadPrescriptionRoutine(currentEditingRoutineObj.routineCode);
+            if (currentEditingRoutineObj) {
+                currentEditingRoutineObj.exercises.splice(index, 1);
+                loadPrescriptionRoutine(currentEditingRoutineObj.routineCode);
+            }
         }
 
         async function saveRoutinePrescription() {
@@ -1378,6 +1379,7 @@
             await portalDB.add('medidas', { studentId: newId, date: today, weight, fat });
 
             closeModal('add-student-modal');
+            document.getElementById('form-add-student').reset();
             await populateStudentDropdowns();
             await changeStudent(newId);
             showToast(`Perfil do atleta ${name} criado!`);
@@ -1397,6 +1399,8 @@
             await portalDB.add('medidas', { studentId: activeStudentId, date, weight, fat, arm, waist, chest });
 
             closeModal('add-metric-modal');
+            document.getElementById('form-add-metric').reset();
+            document.getElementById('input-metric-date').value = new Date().toISOString().split('T')[0];
             await refreshPortalUI();
             showToast("Nova medida registada!");
         }
@@ -1432,7 +1436,6 @@
         }
 
         async function processImportedData(data) {
-            // Suporta formatos diretos de perfil ou coleções do FitPulseDB/PM Studio
             const profileObj = data.perfil || data.profile || (data.name ? data : null);
 
             if (!profileObj || (!profileObj.name && !data.name)) {
@@ -1452,7 +1455,6 @@
                 completedWorkoutsMonth: profileObj.completedWorkoutsMonth || 0
             });
 
-            // Medidas / Peso
             const pesoArray = data.peso || data.weights || [];
             if (Array.isArray(pesoArray)) {
                 for (const p of pesoArray) {
@@ -1468,7 +1470,6 @@
                 }
             }
 
-            // Força / Cargas
             const forcaArray = data.forca || data.strength || [];
             if (Array.isArray(forcaArray)) {
                 for (const f of forcaArray) {
@@ -1481,7 +1482,6 @@
                 }
             }
 
-            // Fichas
             const treinosArray = data.treinos || data.workouts || [];
             if (Array.isArray(treinosArray)) {
                 for (const t of treinosArray) {
@@ -1496,6 +1496,7 @@
             }
 
             closeModal('sync-modal');
+            document.getElementById('json-paste-area').value = '';
             await populateStudentDropdowns();
             await changeStudent(targetStudentId);
             showToast(`Dados do atleta ${studentName} importados com sucesso!`);
@@ -1549,6 +1550,10 @@
                 document.getElementById('input-metric-date').value = new Date().toISOString().split('T')[0];
 
                 await populateStudentDropdowns();
+                const alunos = await portalDB.getAll('alunos');
+                if (alunos.length > 0) {
+                    activeStudentId = alunos[0].id;
+                }
                 await refreshPortalUI();
             } catch (err) {
                 console.error("Erro na inicialização do Portal:", err);
