@@ -164,7 +164,7 @@
                     <p class="text-xs text-brand-accent flex items-center gap-1">
                         <i class="fa-solid fa-circle text-[8px] text-emerald-400"></i> Portal Ativo
                     </p>
-                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">v0.1.8</p>
+                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">v0.1.9</p>
                 </div>
             </div>
             <button onclick="openSyncModal()" title="Importar do Google Drive" class="p-2 bg-slate-800 hover:bg-slate-700 text-brand-400 rounded-xl transition border border-dark-border">
@@ -823,6 +823,7 @@
             await refreshPortalUI();
         }
 
+        // FUNÇÃO DE REMOÇÃO TOTALMENTE CORRIGIDA (TRANSAÇÃO ATÓMICA SEM ERROS)
         async function deleteActiveStudent() {
             if (!activeStudentId) {
                 showToast("Nenhum atleta selecionado para remover.");
@@ -837,36 +838,54 @@
             }
 
             try {
-                const txAlunos = portalDB.db.transaction('alunos', 'readwrite');
-                txAlunos.objectStore('alunos').delete(activeStudentId);
+                const storeNames = ['alunos', 'medidas', 'forca', 'nutricao', 'aulas', 'fichas', 'notas', 'badges'];
+                const tx = portalDB.db.transaction(storeNames, 'readwrite');
 
-                const stores = ['medidas', 'forca', 'nutricao', 'aulas'];
-                for (const storeName of stores) {
-                    const items = await portalDB.getByIndex(storeName, 'studentId', activeStudentId);
-                    const txStore = portalDB.db.transaction(storeName, 'readwrite');
-                    const storeObj = txStore.objectStore(storeName);
-                    items.forEach(item => {
-                        if (item.id) storeObj.delete(item.id);
-                        if (item.key) storeObj.delete(item.key);
+                tx.objectStore('alunos').delete(activeStudentId);
+
+                const storesWithIndex = ['medidas', 'forca', 'nutricao', 'aulas'];
+                for (const storeName of storesWithIndex) {
+                    const store = tx.objectStore(storeName);
+                    const index = store.index('studentId');
+                    const request = index.getAllKeys(activeStudentId);
+                    
+                    request.onsuccess = () => {
+                        const keys = request.result;
+                        keys.forEach(key => store.delete(key));
+                    };
+                }
+
+                tx.objectStore('notas').delete(activeStudentId);
+                tx.objectStore('badges').delete(activeStudentId);
+
+                const fichasStore = tx.objectStore('fichas');
+                const fichasReq = fichasStore.getAllKeys();
+                fichasReq.onsuccess = () => {
+                    const keys = fichasReq.result;
+                    keys.forEach(key => {
+                        if (typeof key === 'string' && key.startsWith(activeStudentId)) {
+                            fichasStore.delete(key);
+                        }
                     });
-                }
+                };
 
-                const directStores = ['notas', 'badges'];
-                for (const ds of directStores) {
-                    const txDs = portalDB.db.transaction(ds, 'readwrite');
-                    txDs.objectStore(ds).delete(activeStudentId);
-                }
+                tx.oncomplete = async () => {
+                    showToast(`Atleta "${studentName}" removido com sucesso.`);
+                    activeStudentId = null;
+                    await populateStudentDropdowns();
+                    const alunosRestantes = await portalDB.getAll('alunos');
+                    if (alunosRestantes.length > 0) {
+                        await changeStudent(alunosRestantes[0].id);
+                    } else {
+                        window.location.reload();
+                    }
+                };
 
-                showToast(`Atleta "${studentName}" removido com sucesso.`);
-                
-                activeStudentId = null;
-                await populateStudentDropdowns();
-                const alunosRestantes = await portalDB.getAll('alunos');
-                if (alunosRestantes.length > 0) {
-                    await changeStudent(alunosRestantes[0].id);
-                } else {
-                    window.location.reload();
-                }
+                tx.onerror = (err) => {
+                    console.error("Erro na transação de remoção:", err);
+                    showToast("Erro ao remover o atleta.");
+                };
+
             } catch (error) {
                 console.error(error);
                 showToast("Erro ao remover o atleta.");
@@ -1250,7 +1269,7 @@ async function refreshPortalUI() {
                 completedWorkoutsMonth: profile.completedWorkoutsMonth || profile.treinosConcluidosMes || 0
             });
 
-            // LIMPEZA PREVIA DE MEDIDAS ANTIGAS PARA EVITAR MULTIPLICAR/DISTORCER O GRÁFICO
+            // LIMPEZA PRÉVIA DE MEDIDAS ANTIGAS PARA EVITAR MULTIPLICAR/DISTORCER O GRÁFICO
             const oldMedidas = await portalDB.getByIndex('medidas', 'studentId', targetId);
             if (oldMedidas && oldMedidas.length > 0) {
                 const txMedidasDel = portalDB.db.transaction('medidas', 'readwrite');
