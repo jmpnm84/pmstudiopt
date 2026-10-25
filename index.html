@@ -109,11 +109,16 @@
                 </button>
             </div>
 
-            <!-- Seletor de Atletas na Sidebar -->
-            <div class="mb-6 bg-slate-900/80 p-3 rounded-2xl border border-dark-border">
-                <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
-                    <i class="fa-solid fa-users text-brand-500"></i> Atleta Selecionado
-                </label>
+            <!-- Seletor de Atletas na Sidebar (Com Opção de Remover) -->
+            <div class="mb-6 bg-slate-900/80 p-3 rounded-2xl border border-dark-border space-y-2">
+                <div class="flex items-center justify-between">
+                    <label class="block text-[11px] font-bold uppercase tracking-wider text-slate-400 flex items-center gap-1.5">
+                        <i class="fa-solid fa-users text-brand-500"></i> Atleta Selecionado
+                    </label>
+                    <button onclick="deleteActiveStudent()" title="Remover Atleta Atual" class="text-rose-400 hover:text-rose-300 text-xs px-2 py-0.5 rounded bg-rose-500/10 border border-rose-500/20 transition flex items-center gap-1">
+                        <i class="fa-solid fa-trash-can"></i> Remover
+                    </button>
+                </div>
                 <select id="sidebar-student-select" onchange="changeStudent(this.value)" class="w-full bg-slate-800 text-xs text-white border border-dark-border rounded-xl p-2.5 outline-none focus:border-brand-500 font-semibold cursor-pointer">
                     <!-- Preenchido via JS -->
                 </select>
@@ -159,7 +164,7 @@
                     <p class="text-xs text-brand-accent flex items-center gap-1">
                         <i class="fa-solid fa-circle text-[8px] text-emerald-400"></i> Portal Ativo
                     </p>
-                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">v0.1.6</p>
+                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">v0.1.7</p>
                 </div>
             </div>
             <button onclick="openSyncModal()" title="Importar do Google Drive" class="p-2 bg-slate-800 hover:bg-slate-700 text-brand-400 rounded-xl transition border border-dark-border">
@@ -175,7 +180,7 @@
                 <img src="https://github.com/user-attachments/assets/accbe46e-a329-43fa-ae13-b47ee6b2c18c" alt="PM Studio Logo" class="w-8 h-8 object-contain rounded-lg border border-dark-border bg-slate-900/50 p-0.5">
                 <span class="font-bold text-lg tracking-wider text-white">PM <span class="text-brand-500">PRO</span></span>
             </div>
-            <!-- Canto Superior Direito: Botão Verde ao Lado Esquerdo do Botão Drive -->
+            <!-- Canto Superior Direito -->
             <div class="flex items-center space-x-2">
                 <button id="pwa-install-btn-mobile" onclick="installPWA()" title="Instalar App" class="hidden w-8 h-8 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center border border-emerald-300/40 shadow-lg shrink-0">
                     <i class="fa-solid fa-download text-xs"></i>
@@ -183,9 +188,9 @@
                 <button onclick="openSyncModal()" class="px-2.5 py-1.5 bg-slate-800 text-brand-400 border border-dark-border rounded-lg text-xs font-semibold flex items-center gap-1.5">
                     <i class="fa-solid fa-cloud-arrow-down"></i> Drive
                 </button>
-                <div id="mobile-avatar" class="w-8 h-8 rounded-full bg-brand-500/20 flex items-center justify-center font-bold text-xs text-brand-500 border border-brand-500/30">
-                    PT
-                </div>
+                <button onclick="deleteActiveStudent()" class="px-2.5 py-1.5 bg-rose-500/10 text-rose-400 border border-rose-500/20 rounded-lg text-xs font-semibold flex items-center gap-1" title="Remover Atleta">
+                    <i class="fa-solid fa-trash-can"></i>
+                </button>
             </div>
         </div>
 
@@ -640,9 +645,8 @@
         <span id="toast-message" class="text-sm">Operação efetuada com sucesso!</span>
     </div>
 
-    <!-- SCRIPT JAVASCRIPT COM COMPLETA INTEGRAÇÃO DE GAMIFICAÇÃO & DRIVE -->
+    <!-- SCRIPT JAVASCRIPT - PARTE 1 -->
     <script>
-        // CAPTURA DO PROMPT DE INSTALAÇÃO DO PWA (ANDROID / CHROME)
         let deferredPrompt = null;
 
         window.addEventListener('beforeinstallprompt', (e) => {
@@ -684,7 +688,6 @@
             showToast("PM Studio PRO foi instalado!");
         });
 
-        // Registo do Service Worker para PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
                 navigator.serviceWorker.register('./sw.js')
@@ -820,7 +823,57 @@
             await refreshPortalUI();
         }
 
-        async function refreshPortalUI() {
+        // Função de remoção do atleta selecionado
+        async function deleteActiveStudent() {
+            if (!activeStudentId) {
+                showToast("Nenhum atleta selecionado para remover.");
+                return;
+            }
+
+            const student = await portalDB.get('alunos', activeStudentId);
+            const studentName = student ? student.name : "este atleta";
+
+            if (!confirm(`Tens a certeza absoluta que pretendes remover o atleta "${studentName}" e todos os seus registos?`)) {
+                return;
+            }
+
+            try {
+                const txAlunos = portalDB.db.transaction('alunos', 'readwrite');
+                txAlunos.objectStore('alunos').delete(activeStudentId);
+
+                const stores = ['medidas', 'forca', 'nutricao', 'aulas'];
+                for (const storeName of stores) {
+                    const items = await portalDB.getByIndex(storeName, 'studentId', activeStudentId);
+                    const txStore = portalDB.db.transaction(storeName, 'readwrite');
+                    const storeObj = txStore.objectStore(storeName);
+                    items.forEach(item => {
+                        if (item.id) storeObj.delete(item.id);
+                        if (item.key) storeObj.delete(item.key);
+                    });
+                }
+
+                const directStores = ['notas', 'badges'];
+                for (const ds of directStores) {
+                    const txDs = portalDB.db.transaction(ds, 'readwrite');
+                    txDs.objectStore(ds).delete(activeStudentId);
+                }
+
+                showToast(`Atleta "${studentName}" removido com sucesso.`);
+                
+                activeStudentId = null;
+                await populateStudentDropdowns();
+                const alunosRestantes = await portalDB.getAll('alunos');
+                if (alunosRestantes.length > 0) {
+                    await changeStudent(alunosRestantes[0].id);
+                } else {
+                    window.location.reload();
+                }
+            } catch (error) {
+                console.error(error);
+                showToast("Erro ao remover o atleta.");
+            }
+        }
+async function refreshPortalUI() {
             if (!activeStudentId) return;
             const student = await portalDB.get('alunos', activeStudentId);
             if (!student) return;
@@ -1178,11 +1231,16 @@
             }
         }
 
+        // CORREÇÃO DA DUPLICAÇÃO DE ATLETAS NA IMPORTAÇÃO
         async function processImportedData(data) {
             const rawData = data.payload || data;
             const profile = rawData.profile || rawData.atleta || rawData.perfil || rawData;
-            const targetId = `student_${Date.now()}`;
             const athleteName = profile.name || profile.nome || data.athleteName || "Atleta Importado";
+
+            const alunos = await portalDB.getAll('alunos');
+            const existingStudent = alunos.find(a => a.name.trim().toLowerCase() === athleteName.trim().toLowerCase());
+            
+            const targetId = existingStudent ? existingStudent.id : `student_${Date.now()}`;
 
             await portalDB.put('alunos', {
                 id: targetId,
