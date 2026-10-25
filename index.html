@@ -94,13 +94,19 @@
     <!-- BARRA LATERAL (Desktop) -->
     <aside class="hidden md:flex flex-col w-64 bg-dark-card border-r border-dark-border p-5 justify-between h-screen sticky top-0 z-30">
         <div>
-            <!-- Logo -->
-            <div class="flex items-center space-x-3 mb-6 px-2">
-                <img src="https://github.com/user-attachments/assets/accbe46e-a329-43fa-ae13-b47ee6b2c18c" alt="PM Studio Logo" class="w-10 h-10 object-contain rounded-xl border border-dark-border bg-slate-900/50 p-0.5">
-                <div>
-                    <h1 class="text-xl font-bold tracking-wider text-white">PM <span class="text-brand-500">PRO</span></h1>
-                    <p class="text-xs text-brand-accent font-medium">Portal do Personal Trainer</p>
+            <!-- Logo & Botão de Instalação na Sidebar -->
+            <div class="flex items-center justify-between mb-6 px-2">
+                <div class="flex items-center space-x-3">
+                    <img src="https://github.com/user-attachments/assets/accbe46e-a329-43fa-ae13-b47ee6b2c18c" alt="PM Studio Logo" class="w-10 h-10 object-contain rounded-xl border border-dark-border bg-slate-900/50 p-0.5">
+                    <div>
+                        <h1 class="text-xl font-bold tracking-wider text-white">PM <span class="text-brand-500">PRO</span></h1>
+                        <p class="text-xs text-brand-accent font-medium">Portal do Personal</p>
+                    </div>
                 </div>
+                <!-- Botão de Instalação no topo da Sidebar -->
+                <button id="pwa-install-btn-sidebar" onclick="installPWA()" title="Instalar App Android" class="hidden w-9 h-9 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center transition border border-emerald-300/40 shrink-0 shadow-lg">
+                    <i class="fa-solid fa-download text-sm"></i>
+                </button>
             </div>
 
             <!-- Seletor de Atletas na Sidebar -->
@@ -153,7 +159,7 @@
                     <p class="text-xs text-brand-accent flex items-center gap-1">
                         <i class="fa-solid fa-circle text-[8px] text-emerald-400"></i> Portal Ativo
                     </p>
-                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">v0.1.5</p>
+                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">v0.1.6</p>
                 </div>
             </div>
             <button onclick="openSyncModal()" title="Importar do Google Drive" class="p-2 bg-slate-800 hover:bg-slate-700 text-brand-400 rounded-xl transition border border-dark-border">
@@ -169,7 +175,11 @@
                 <img src="https://github.com/user-attachments/assets/accbe46e-a329-43fa-ae13-b47ee6b2c18c" alt="PM Studio Logo" class="w-8 h-8 object-contain rounded-lg border border-dark-border bg-slate-900/50 p-0.5">
                 <span class="font-bold text-lg tracking-wider text-white">PM <span class="text-brand-500">PRO</span></span>
             </div>
+            <!-- Canto Superior Direito: Botão Verde ao Lado Esquerdo do Botão Drive -->
             <div class="flex items-center space-x-2">
+                <button id="pwa-install-btn-mobile" onclick="installPWA()" title="Instalar App" class="hidden w-8 h-8 bg-emerald-500 hover:bg-emerald-600 text-white rounded-full flex items-center justify-center border border-emerald-300/40 shadow-lg shrink-0">
+                    <i class="fa-solid fa-download text-xs"></i>
+                </button>
                 <button onclick="openSyncModal()" class="px-2.5 py-1.5 bg-slate-800 text-brand-400 border border-dark-border rounded-lg text-xs font-semibold flex items-center gap-1.5">
                     <i class="fa-solid fa-cloud-arrow-down"></i> Drive
                 </button>
@@ -632,6 +642,48 @@
 
     <!-- SCRIPT JAVASCRIPT COM COMPLETA INTEGRAÇÃO DE GAMIFICAÇÃO & DRIVE -->
     <script>
+        // CAPTURA DO PROMPT DE INSTALAÇÃO DO PWA (ANDROID / CHROME)
+        let deferredPrompt = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            showInstallButtons(true);
+        });
+
+        function showInstallButtons(show) {
+            const mobileBtn = document.getElementById('pwa-install-btn-mobile');
+            const sidebarBtn = document.getElementById('pwa-install-btn-sidebar');
+
+            if (show) {
+                if (mobileBtn) mobileBtn.classList.remove('hidden');
+                if (sidebarBtn) sidebarBtn.classList.remove('hidden');
+            } else {
+                if (mobileBtn) mobileBtn.classList.add('hidden');
+                if (sidebarBtn) sidebarBtn.classList.add('hidden');
+            }
+        }
+
+        async function installPWA() {
+            if (!deferredPrompt) {
+                showToast("A instalação não está disponível no momento ou a app já está instalada.");
+                return;
+            }
+            deferredPrompt.prompt();
+            const { outcome } = await deferredPrompt.userChoice;
+            if (outcome === 'accepted') {
+                showToast("App instalada com sucesso!");
+                showInstallButtons(false);
+            }
+            deferredPrompt = null;
+        }
+
+        window.addEventListener('appinstalled', () => {
+            showInstallButtons(false);
+            deferredPrompt = null;
+            showToast("PM Studio PRO foi instalado!");
+        });
+
         // Registo do Service Worker para PWA
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
