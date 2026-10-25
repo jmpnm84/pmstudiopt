@@ -164,7 +164,7 @@
                     <p class="text-xs text-brand-accent flex items-center gap-1">
                         <i class="fa-solid fa-circle text-[8px] text-emerald-400"></i> Portal Ativo
                     </p>
-                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">v0.1.7</p>
+                    <p class="text-[10px] text-slate-500 font-mono mt-0.5">v0.1.8</p>
                 </div>
             </div>
             <button onclick="openSyncModal()" title="Importar do Google Drive" class="p-2 bg-slate-800 hover:bg-slate-700 text-brand-400 rounded-xl transition border border-dark-border">
@@ -823,7 +823,6 @@
             await refreshPortalUI();
         }
 
-        // Função de remoção do atleta selecionado
         async function deleteActiveStudent() {
             if (!activeStudentId) {
                 showToast("Nenhum atleta selecionado para remover.");
@@ -1231,7 +1230,7 @@ async function refreshPortalUI() {
             }
         }
 
-        // CORREÇÃO DA DUPLICAÇÃO DE ATLETAS NA IMPORTAÇÃO
+        // CORREÇÃO DA DUPLICAÇÃO DE ATLETAS E CORREÇÃO DO GRÁFICO DE PESO
         async function processImportedData(data) {
             const rawData = data.payload || data;
             const profile = rawData.profile || rawData.atleta || rawData.perfil || rawData;
@@ -1251,6 +1250,14 @@ async function refreshPortalUI() {
                 completedWorkoutsMonth: profile.completedWorkoutsMonth || profile.treinosConcluidosMes || 0
             });
 
+            // LIMPEZA PREVIA DE MEDIDAS ANTIGAS PARA EVITAR MULTIPLICAR/DISTORCER O GRÁFICO
+            const oldMedidas = await portalDB.getByIndex('medidas', 'studentId', targetId);
+            if (oldMedidas && oldMedidas.length > 0) {
+                const txMedidasDel = portalDB.db.transaction('medidas', 'readwrite');
+                const storeMedidasDel = txMedidasDel.objectStore('medidas');
+                oldMedidas.forEach(m => storeMedidasDel.delete(m.id));
+            }
+
             const pesoList = rawData.peso || rawData.medidasEPeso || [];
             if (Array.isArray(pesoList)) {
                 for (const p of pesoList) {
@@ -1264,6 +1271,14 @@ async function refreshPortalUI() {
                         chest: p.chest ? parseFloat(p.chest) : null
                     });
                 }
+            }
+
+            // LIMPEZA PRÉVIA DE DADOS DE FORÇA
+            const oldForca = await portalDB.getByIndex('forca', 'studentId', targetId);
+            if (oldForca && oldForca.length > 0) {
+                const txForcaDel = portalDB.db.transaction('forca', 'readwrite');
+                const storeForcaDel = txForcaDel.objectStore('forca');
+                oldForca.forEach(f => storeForcaDel.delete(f.id));
             }
 
             const forcaList = rawData.forca || rawData.evolucaoForca || [];
