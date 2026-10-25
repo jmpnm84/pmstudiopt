@@ -4,6 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>PM Studio - Portal Personal Trainer</title>
+    
+    <!-- PWA Manifest & Theme -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#121212">
+
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Chart.js CDN -->
@@ -546,7 +551,8 @@
             <span class="text-[10px] mt-0.5 block">Nutrição</span>
         </button>
     </nav>
-<!-- MODAL GOOGLE DRIVE SYNC & LISTAGEM AUTOMÁTICA DE ATLETAS -->
+
+    <!-- MODAL GOOGLE DRIVE SYNC & LISTAGEM AUTOMÁTICA DE ATLETAS -->
     <div id="sync-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-dark-card border border-brand-500/30 p-6 rounded-2xl w-full max-w-lg space-y-5 relative shadow-2xl">
             <button onclick="closeModal('sync-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
@@ -626,9 +632,18 @@
 
     <!-- SCRIPT JAVASCRIPT COM COMPLETA INTEGRAÇÃO DE GAMIFICAÇÃO & DRIVE -->
     <script>
+        // Registo do Service Worker para PWA
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(reg => console.log('Service Worker registado com sucesso:', reg.scope))
+                    .catch(err => console.log('Falha ao registar o Service Worker:', err));
+            });
+        }
+
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwg0YBjv4_djqq6Nl4GqxYhbG-OKTGLf1S_nQaRGgOSPXFwZcHiRhkSmZUcOuYZ3rA_jA/exec";
         const DB_NAME = 'PTPortalDB';
-        const DB_VERSION = 3; // Versão atualizada para novos schemas de aulas e payload unificado
+        const DB_VERSION = 3;
 
         class PTPortalDB {
             constructor() { this.db = null; }
@@ -758,7 +773,6 @@
             const student = await portalDB.get('alunos', activeStudentId);
             if (!student) return;
 
-            // 1. Atualiza Perfil, Nível, XP e Streak
             document.getElementById('student-name-display').innerText = student.name;
             document.getElementById('student-avatar-large').innerText = getInitials(student.name);
             document.getElementById('student-level-badge').innerText = `Nível ${student.level || 1}`;
@@ -766,7 +780,6 @@
             document.getElementById('student-xp-display').innerText = student.xp || 0;
             document.getElementById('student-workouts-display').innerText = student.completedWorkoutsMonth || 0;
 
-            // 2. Medidas e Peso
             const medidas = await portalDB.getByIndex('medidas', 'studentId', activeStudentId);
             medidas.sort((a, b) => new Date(a.date) - new Date(b.date));
             if (medidas.length > 0) {
@@ -778,7 +791,6 @@
                 document.getElementById('dash-fat').innerText = '--';
             }
 
-            // 3. Nutrição e Água
             const today = new Date().toISOString().split('T')[0];
             const nutricao = await portalDB.get('nutricao', `${activeStudentId}_${today}`) || { water: 0, cals: 0, prot: 0, carbs: 0, fat: 0 };
             document.getElementById('dash-cals').innerText = nutricao.cals;
@@ -794,13 +806,11 @@
             document.getElementById('pt-water-val').innerText = nutricao.water.toFixed(1);
             document.getElementById('pt-water-cups').innerText = Math.round(nutricao.water / 0.25);
 
-            // 4. Anotações
             const nota = await portalDB.get('notas', activeStudentId);
             const notaText = nota ? nota.text : '';
             document.getElementById('quick-trainer-note').value = notaText;
             document.getElementById('full-trainer-notes').value = notaText;
 
-            // 5. Aulas Reservadas pelo Atleta
             const aulas = await portalDB.getByIndex('aulas', 'studentId', activeStudentId) || [];
             const bookedClassesContainer = document.getElementById('pt-dash-booked-classes');
             if (bookedClassesContainer) {
@@ -824,9 +834,7 @@
                 }
             }
 
-            // 6. Badges e Conquistas
             await renderStudentBadges(student);
-
             await renderDashboardRoutineSummary();
             renderMetricsTable(medidas);
             await renderPTRoutine(currentPTRoutineTab);
@@ -1021,9 +1029,6 @@
             showToast("Prontuário atualizado!");
         }
 
-        // =============================================================
-        // INTEGRAÇÃO GOOGLE DRIVE (LISTAR, LER & SINCRONIZAR TUDO)
-        // =============================================================
         function openSyncModal() {
             openModal('sync-modal');
             fetchDriveFilesList();
@@ -1122,13 +1127,11 @@
         }
 
         async function processImportedData(data) {
-            // Suporta dados aninhados em .payload ou diretos
             const rawData = data.payload || data;
             const profile = rawData.profile || rawData.atleta || rawData.perfil || rawData;
             const targetId = `student_${Date.now()}`;
             const athleteName = profile.name || profile.nome || data.athleteName || "Atleta Importado";
 
-            // 1. Perfil + Gamificação (XP, Nível, Streak)
             await portalDB.put('alunos', {
                 id: targetId,
                 name: athleteName,
@@ -1138,7 +1141,6 @@
                 completedWorkoutsMonth: profile.completedWorkoutsMonth || profile.treinosConcluidosMes || 0
             });
 
-            // 2. Histórico de Medidas e Peso (suporta 'peso' ou 'medidasEPeso')
             const pesoList = rawData.peso || rawData.medidasEPeso || [];
             if (Array.isArray(pesoList)) {
                 for (const p of pesoList) {
@@ -1154,7 +1156,6 @@
                 }
             }
 
-            // 3. Força (suporta 'forca' ou 'evolucaoForca')
             const forcaList = rawData.forca || rawData.evolucaoForca || [];
             if (Array.isArray(forcaList)) {
                 for (const f of forcaList) {
@@ -1167,7 +1168,6 @@
                 }
             }
 
-            // 4. Diário de Treinos
             const treinosList = rawData.treinos || [];
             if (Array.isArray(treinosList)) {
                 for (const t of treinosList) {
@@ -1181,7 +1181,6 @@
                 }
             }
 
-            // 5. Nutrição e Hidratação
             const nutricaoList = rawData.nutricao || rawData.nutricaoEHidratacao || [];
             if (Array.isArray(nutricaoList)) {
                 for (const n of nutricaoList) {
@@ -1199,7 +1198,6 @@
                 }
             }
 
-            // 6. Aulas Reservadas (para o PT visualizar)
             const aulasList = rawData.aulas || [];
             if (Array.isArray(aulasList)) {
                 for (const a of aulasList) {
@@ -1211,7 +1209,6 @@
                 }
             }
 
-            // 7. Badges & Conquistas
             const badgesList = rawData.conquistasEBadges || rawData.badges || [];
             if (Array.isArray(badgesList) && badgesList.length > 0) {
                 await portalDB.put('badges', {
