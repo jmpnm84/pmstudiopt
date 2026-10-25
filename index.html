@@ -255,7 +255,7 @@
                 </div>
             </div>
 
-            <!-- Resumo de Treino e Observações do Personal -->
+            <!-- Resumo de Treino, Aulas Reservadas e Observações do Personal -->
             <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
                 <div class="lg:col-span-2 bg-dark-card p-6 rounded-2xl border border-dark-border space-y-4">
                     <div class="flex justify-between items-center">
@@ -274,16 +274,29 @@
                     </button>
                 </div>
 
-                <div class="bg-dark-card p-6 rounded-2xl border border-dark-border flex flex-col justify-between">
-                    <div>
-                        <h3 class="font-bold text-lg text-white mb-3 flex items-center gap-2">
-                            <i class="fa-solid fa-user-doctor text-brand-accent"></i> Anotações do Trainer
-                        </h3>
-                        <textarea id="quick-trainer-note" rows="5" placeholder="Observações de postura, ajustes de carga ou dieta para este atleta..." class="w-full bg-slate-800/80 text-xs text-slate-200 border border-dark-border rounded-xl p-3 outline-none focus:border-brand-500 custom-scrollbar resize-none"></textarea>
+                <div class="space-y-6 flex flex-col">
+                    <div class="bg-dark-card p-6 rounded-2xl border border-dark-border flex-1 flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-lg text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-calendar-check text-brand-accent"></i> Aulas Reservadas pelo Atleta
+                            </h3>
+                            <div id="pt-dash-booked-classes" class="space-y-2">
+                                <!-- Inserido dinamicamente via JS -->
+                            </div>
+                        </div>
                     </div>
-                    <button onclick="saveQuickNote()" class="mt-4 w-full py-2.5 bg-brand-500 hover:bg-brand-600 text-black font-bold rounded-xl text-xs transition neon-glow">
-                        Guardar Anotação
-                    </button>
+
+                    <div class="bg-dark-card p-6 rounded-2xl border border-dark-border flex flex-col justify-between">
+                        <div>
+                            <h3 class="font-bold text-lg text-white mb-3 flex items-center gap-2">
+                                <i class="fa-solid fa-user-doctor text-brand-accent"></i> Anotações do Trainer
+                            </h3>
+                            <textarea id="quick-trainer-note" rows="4" placeholder="Observações de postura, ajustes de carga ou dieta para este atleta..." class="w-full bg-slate-800/80 text-xs text-slate-200 border border-dark-border rounded-xl p-3 outline-none focus:border-brand-500 custom-scrollbar resize-none"></textarea>
+                        </div>
+                        <button onclick="saveQuickNote()" class="mt-4 w-full py-2.5 bg-brand-500 hover:bg-brand-600 text-black font-bold rounded-xl text-xs transition neon-glow">
+                            Guardar Anotação
+                        </button>
+                    </div>
                 </div>
             </div>
 
@@ -533,8 +546,7 @@
             <span class="text-[10px] mt-0.5 block">Nutrição</span>
         </button>
     </nav>
-
-    <!-- MODAL GOOGLE DRIVE SYNC & LISTAGEM AUTOMÁTICA DE ATLETAS -->
+<!-- MODAL GOOGLE DRIVE SYNC & LISTAGEM AUTOMÁTICA DE ATLETAS -->
     <div id="sync-modal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4 backdrop-blur-sm">
         <div class="bg-dark-card border border-brand-500/30 p-6 rounded-2xl w-full max-w-lg space-y-5 relative shadow-2xl">
             <button onclick="closeModal('sync-modal')" class="absolute top-4 right-4 text-slate-400 hover:text-white">
@@ -616,7 +628,7 @@
     <script>
         const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbwg0YBjv4_djqq6Nl4GqxYhbG-OKTGLf1S_nQaRGgOSPXFwZcHiRhkSmZUcOuYZ3rA_jA/exec";
         const DB_NAME = 'PTPortalDB';
-        const DB_VERSION = 2; // Versão atualizada para novos schemas
+        const DB_VERSION = 3; // Versão atualizada para novos schemas de aulas e payload unificado
 
         class PTPortalDB {
             constructor() { this.db = null; }
@@ -638,6 +650,10 @@
                         if (!db.objectStoreNames.contains('nutricao')) db.createObjectStore('nutricao', { keyPath: 'key' });
                         if (!db.objectStoreNames.contains('notas')) db.createObjectStore('notas', { keyPath: 'studentId' });
                         if (!db.objectStoreNames.contains('badges')) db.createObjectStore('badges', { keyPath: 'studentId' });
+                        if (!db.objectStoreNames.contains('aulas')) {
+                            const store = db.createObjectStore('aulas', { keyPath: 'key' });
+                            store.createIndex('studentId', 'studentId', { unique: false });
+                        }
                     };
                     request.onsuccess = (e) => { this.db = e.target.result; resolve(this.db); };
                     request.onerror = (e) => reject('Erro IndexedDB: ' + e.target.error);
@@ -757,6 +773,9 @@
                 const last = medidas[medidas.length - 1];
                 document.getElementById('dash-weight').innerText = last.weight;
                 document.getElementById('dash-fat').innerText = last.fat || '--';
+            } else {
+                document.getElementById('dash-weight').innerText = '--';
+                document.getElementById('dash-fat').innerText = '--';
             }
 
             // 3. Nutrição e Água
@@ -781,7 +800,31 @@
             document.getElementById('quick-trainer-note').value = notaText;
             document.getElementById('full-trainer-notes').value = notaText;
 
-            // 5. Badges e Conquistas
+            // 5. Aulas Reservadas pelo Atleta
+            const aulas = await portalDB.getByIndex('aulas', 'studentId', activeStudentId) || [];
+            const bookedClassesContainer = document.getElementById('pt-dash-booked-classes');
+            if (bookedClassesContainer) {
+                bookedClassesContainer.innerHTML = '';
+                const booked = aulas.filter(c => c.booked);
+                if (booked.length === 0) {
+                    bookedClassesContainer.innerHTML = `<p class="text-xs text-slate-500 py-2">Sem aulas reservadas pelo atleta.</p>`;
+                } else {
+                    booked.forEach(b => {
+                        const item = document.createElement('div');
+                        item.className = "flex items-center justify-between p-2.5 bg-slate-800/60 rounded-xl border border-slate-700/50 text-xs";
+                        item.innerHTML = `
+                            <div>
+                                <p class="font-bold text-white">${b.name}</p>
+                                <p class="text-[10px] text-slate-400">${b.time} (${b.category})</p>
+                            </div>
+                            <span class="text-[10px] bg-brand-500/20 text-brand-400 px-2 py-0.5 rounded-full font-semibold">Reservado</span>
+                        `;
+                        bookedClassesContainer.appendChild(item);
+                    });
+                }
+            }
+
+            // 6. Badges e Conquistas
             await renderStudentBadges(student);
 
             await renderDashboardRoutineSummary();
@@ -1043,19 +1086,21 @@
             const forcaData = await portalDB.getByIndex('forca', 'studentId', activeStudentId);
             const notas = await portalDB.get('notas', activeStudentId);
             const badges = await portalDB.get('badges', activeStudentId);
+            const aulasData = await portalDB.getByIndex('aulas', 'studentId', activeStudentId);
 
             const payloadData = {
                 athleteName: student.name,
                 payload: {
-                    atleta: {
-                        nome: student.name,
-                        nivel: student.level || 1,
-                        experienciaXP: student.xp || 0,
-                        diasSeguidosStreak: student.streak || 0,
-                        treinosConcluidosMes: student.completedWorkoutsMonth || 0
+                    profile: {
+                        name: student.name,
+                        level: student.level || 1,
+                        xp: student.xp || 0,
+                        streak: student.streak || 0,
+                        completedWorkoutsMonth: student.completedWorkoutsMonth || 0
                     },
-                    medidasEPeso: pesoData,
-                    evolucaoForca: forcaData,
+                    peso: pesoData,
+                    forca: forcaData,
+                    aulas: aulasData,
                     conquistasEBadges: badges ? badges.list : [],
                     notasTrainer: notas ? notas.text : "",
                     lastSync: new Date().toISOString()
@@ -1077,23 +1122,24 @@
         }
 
         async function processImportedData(data) {
-            // Suporta chave 'atleta' ou 'profile' / 'perfil'
-            const profile = data.atleta || data.profile || data.perfil || data;
+            // Suporta dados aninhados em .payload ou diretos
+            const rawData = data.payload || data;
+            const profile = rawData.profile || rawData.atleta || rawData.perfil || rawData;
             const targetId = `student_${Date.now()}`;
-            const athleteName = profile.nome || profile.name || data.athleteName || "Atleta Importado";
+            const athleteName = profile.name || profile.nome || data.athleteName || "Atleta Importado";
 
             // 1. Perfil + Gamificação (XP, Nível, Streak)
             await portalDB.put('alunos', {
                 id: targetId,
                 name: athleteName,
-                streak: profile.diasSeguidosStreak || profile.streak || 0,
-                xp: profile.experienciaXP || profile.xp || 0,
-                level: profile.nivel || profile.level || 1,
-                completedWorkoutsMonth: profile.treinosConcluidosMes || profile.completedWorkoutsMonth || 0
+                streak: profile.streak || profile.diasSeguidosStreak || 0,
+                xp: profile.xp || profile.experienciaXP || 0,
+                level: profile.level || profile.nivel || 1,
+                completedWorkoutsMonth: profile.completedWorkoutsMonth || profile.treinosConcluidosMes || 0
             });
 
-            // 2. Histórico de Medidas e Peso
-            const pesoList = data.medidasEPeso || data.peso || [];
+            // 2. Histórico de Medidas e Peso (suporta 'peso' ou 'medidasEPeso')
+            const pesoList = rawData.peso || rawData.medidasEPeso || [];
             if (Array.isArray(pesoList)) {
                 for (const p of pesoList) {
                     await portalDB.add('medidas', {
@@ -1108,8 +1154,8 @@
                 }
             }
 
-            // 3. Força
-            const forcaList = data.evolucaoForca || data.forca || [];
+            // 3. Força (suporta 'forca' ou 'evolucaoForca')
+            const forcaList = rawData.forca || rawData.evolucaoForca || [];
             if (Array.isArray(forcaList)) {
                 for (const f of forcaList) {
                     await portalDB.add('forca', {
@@ -1122,7 +1168,7 @@
             }
 
             // 4. Diário de Treinos
-            const treinosList = data.treinos || [];
+            const treinosList = rawData.treinos || [];
             if (Array.isArray(treinosList)) {
                 for (const t of treinosList) {
                     await portalDB.put('fichas', {
@@ -1136,7 +1182,7 @@
             }
 
             // 5. Nutrição e Hidratação
-            const nutricaoList = data.nutricaoEHidratacao || data.nutricao || [];
+            const nutricaoList = rawData.nutricao || rawData.nutricaoEHidratacao || [];
             if (Array.isArray(nutricaoList)) {
                 for (const n of nutricaoList) {
                     const dateKey = n.date || new Date().toISOString().split('T')[0];
@@ -1153,8 +1199,20 @@
                 }
             }
 
-            // 6. Badges & Conquistas
-            const badgesList = data.conquistasEBadges || data.badges || [];
+            // 6. Aulas Reservadas (para o PT visualizar)
+            const aulasList = rawData.aulas || [];
+            if (Array.isArray(aulasList)) {
+                for (const a of aulasList) {
+                    await portalDB.put('aulas', {
+                        key: `${targetId}_${a.id}`,
+                        studentId: targetId,
+                        ...a
+                    });
+                }
+            }
+
+            // 7. Badges & Conquistas
+            const badgesList = rawData.conquistasEBadges || rawData.badges || [];
             if (Array.isArray(badgesList) && badgesList.length > 0) {
                 await portalDB.put('badges', {
                     studentId: targetId,
