@@ -174,7 +174,6 @@ async function changeStudent(id) {
     await refreshPortalUI();
 }
 
-// FUNÇÃO DE REMOÇÃO TOTALMENTE CORRIGIDA (TRANSAÇÃO ATÓMICA SEM ERROS)
 async function deleteActiveStudent() {
     if (!activeStudentId) {
         showToast("Nenhum atleta selecionado para remover.");
@@ -601,7 +600,6 @@ async function syncActiveStudentToGoogleDrive() {
     }
 }
 
-// CORREÇÃO DA DUPLICAÇÃO DE ATLETAS E CORREÇÃO DO GRÁFICO DE PESO
 async function processImportedData(data) {
     const rawData = data.payload || data;
     const profile = rawData.profile || rawData.atleta || rawData.perfil || rawData;
@@ -621,7 +619,6 @@ async function processImportedData(data) {
         completedWorkoutsMonth: profile.completedWorkoutsMonth || profile.treinosConcluidosMes || 0
     });
 
-    // LIMPEZA PRÉVIA DE MEDIDAS ANTIGAS PARA EVITAR MULTIPLICAR/DISTORCER O GRÁFICO
     const oldMedidas = await portalDB.getByIndex('medidas', 'studentId', targetId);
     if (oldMedidas && oldMedidas.length > 0) {
         const txMedidasDel = portalDB.db.transaction('medidas', 'readwrite');
@@ -644,7 +641,6 @@ async function processImportedData(data) {
         }
     }
 
-    // LIMPEZA PRÉVIA DE DADOS DE FORÇA
     const oldForca = await portalDB.getByIndex('forca', 'studentId', targetId);
     if (oldForca && oldForca.length > 0) {
         const txForcaDel = portalDB.db.transaction('forca', 'readwrite');
