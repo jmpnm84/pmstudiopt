@@ -1,0 +1,39 @@
+body {
+    background-color: #121212;
+    color: #f8fafc;
+    font-family: 'Inter', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+
+.neon-glow {
+    box-shadow: 0 0 15px rgba(204, 255, 0, 0.25);
+}
+
+.neon-glow-lg {
+    box-shadow: 0 0 25px rgba(204, 255, 0, 0.35);
+}
+
+.custom-scrollbar::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+}
+.custom-scrollbar::-webkit-scrollbar-track {
+    background: #1e1e1e;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb {
+    background: #2a2a2a;
+    border-radius: 9999px;
+}
+.custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: #ccff00;
+}
+
+.tab-content {
+    display: none;
+    opacity: 0;
+    transition: opacity 0.25s ease-in-out;
+}
+.tab-content.active {
+    display: block;
+    opacity: 1;
+}
